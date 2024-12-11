@@ -1,0 +1,26 @@
+spring:
+    datasource:
+        username: ${POSTGRES_USER:db}
+        password: ${POSTGRES_PASSWORD:db_pass}
+        url: jdbc:postgresql://${POSTGRES_HOSTNAME:localhost}:${POSTGRES_PORT:5437}/${POSTGRES_DB:db}
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        properties:
+            hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+            hibernate.show_sql: true
+            org.hibernate.envers:
+                revision_field_name: REVISION_ID
+                revision_type_field_name: REVISION_TYPE
+        hibernate.ddl-auto: validate
+        show-sql: true
+    jackson:
+        serialization:
+            fail_on_empty_beans: false
+            write_dates_as_timestamps: false
+            indent-output: true
+    liquibase:
+        change-log: classpath:/db/dbchangelog.xml
+    servlet:
+        multipart:
+            max-file-size: 10MB
+            max-request-size: 10MB

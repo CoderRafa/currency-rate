@@ -1,0 +1,57 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        enable_lazy_load_no_trans: true
+    hibernate:
+      ddl-auto: validate
+  jackson:
+    serialization:
+      fail_on_empty_beans: false
+      write_dates_as_timestamps: false
+      indent-output: true
+  liquibase:
+    change-log: classpath:/db/dbchangelog.xml
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  task.scheduling.pool.size: 5
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+logging:
+  level:
+    root: info
+    com.raf: debug
+    org.springframework.web.filter.CommonsRequestLoggingFilter: info
+    org.springframework.security.web.authentication.www: info
+    ru.mvp.dap.qiwi.QiwiFeignClient: trace
+
+server:
+  error:
+    include-stacktrace: ALWAYS
+    include-message: ALWAYS
+    include-exception: true
+
+management:
+  endpoints:
+    enabled-by-default: true
+    web.exposure.include: "*"
+  endpoint:
+    info.enabled: true
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    db.enabled: false
+    redis.enabled: false
+  prometheus:
+    metrics:
+      export:
+        enabled: true
