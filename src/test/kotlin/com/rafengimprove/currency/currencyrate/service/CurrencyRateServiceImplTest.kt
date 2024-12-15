@@ -22,9 +22,9 @@ class CurrencyRateServiceImplTest @Autowired constructor(val currencyRateService
 
     @Test
     @Order(0)
-    fun `Happy pass - save an account`() {
+    fun `Happy pass - save a currency rate`() {
 
-        val savedCurrencyRate = currencyRateService.save(CurrencyRateDto(1, USD, 75.5))
+        val savedCurrencyRate = currencyRateService.save(CurrencyRateDto(type = USD, rate = 75.5))
 
         log.debug("Saved currency rate {}", savedCurrencyRate)
 

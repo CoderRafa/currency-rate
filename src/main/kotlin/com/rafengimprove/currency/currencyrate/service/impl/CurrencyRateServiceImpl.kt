@@ -1,10 +1,11 @@
-package com.rafengimprove.currency.currencyrate.service
+package com.rafengimprove.currency.currencyrate.service.impl
 
 import com.rafengimprove.currency.currencyrate.model.dto.CurrencyRateDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
 import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
+import com.rafengimprove.currency.currencyrate.service.CurrencyRateService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -15,16 +16,16 @@ class CurrencyRateServiceImpl(private val currencyRateRepository: CurrencyRateRe
 
     override fun save(currencyRate: CurrencyRateDto): CurrencyRateDto {
         log.debug("Create a new currency rate")
-        if (findByType(currencyRate.type) != null) {
-            return editByType(currencyRate.type, currencyRate.rate)!!
+        return if (currencyRateRepository.existsByType(currencyRate.type)) {
+            editByType(currencyRate.type, currencyRate.rate)!!
         } else {
-            return currencyRateRepository.save(currencyRate.toEntity()).toDto()
+            currencyRateRepository.save(currencyRate.toEntity()).toDto()
         }
     }
 
     override fun editByType(type: CurrencyType, rate: Double): CurrencyRateDto? {
         log.debug("Edit currency rate by type {}", type)
-        if (findByType(type) != null) {
+        if (currencyRateRepository.existsByType(type)) {
             val currencyToUpdate = findByType(type)
             currencyToUpdate?.rate = rate
             return currencyRateRepository.save(currencyToUpdate!!.toEntity()).toDto()
@@ -39,13 +40,11 @@ class CurrencyRateServiceImpl(private val currencyRateRepository: CurrencyRateRe
 
     override fun findByType(type: CurrencyType): CurrencyRateDto? {
         log.debug("Get currency rate by type {}", type)
-        val listOfCurrencyRates = currencyRateRepository.findAll()
-        for (element in listOfCurrencyRates) {
-            if (element.type == type) {
-                return element.toDto()
-            }
-        }
-        return null
+       return if (currencyRateRepository.existsByType(type)) {
+           currencyRateRepository.findByType(type).toDto()
+       } else {
+           null
+       }
     }
 
     override fun deleteByType(type: CurrencyType): List<CurrencyRateDto> {
