@@ -5,28 +5,28 @@ import com.rafengimprove.currency.currencyrate.service.OfficeService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/office")
+@RequestMapping("/api/v1")
 class OfficeController(val officeService: OfficeService) {
 
-    @PostMapping
-    fun save(@RequestBody office: OfficeDto): OfficeDto {
-        return officeService.save(office)
+    @PostMapping("/bank/{id}/office")
+    fun save(@PathVariable("id") id: Long, @RequestBody office: OfficeDto): OfficeDto {
+        return officeService.save(id, office)
     }
 
-    @GetMapping
-    fun getAllOffices(): List<OfficeDto> {
-        return officeService.getAll()
+    @GetMapping("/bank/{id}/office")
+    fun getAllOfficesOfBank(@PathVariable("id") id: Long): List<OfficeDto> {
+        return officeService.getAllByBank(id)
     }
 
-    @GetMapping("/{address}")
-    fun getOfficeByAddress(@PathVariable("address") address: String): OfficeDto? {
-        return officeService.getByAddress(address)
+    @GetMapping("/office/{id}")
+    fun getOfficeById(@PathVariable("id") id: Long): OfficeDto? {
+        return officeService.getById(id)
     }
 
-    @PutMapping("/{address}")
-    fun editOfficeByAddress(
-        @PathVariable("address") address: String,
+    @PutMapping("/bank/{id}/office")
+    fun editOfficeById(
+        @PathVariable("id") id: Long,
         @RequestBody office: OfficeDto): OfficeDto? {
-        return officeService.editByAddress(address, office)
+        return officeService.editById(id, office)
     }
 }

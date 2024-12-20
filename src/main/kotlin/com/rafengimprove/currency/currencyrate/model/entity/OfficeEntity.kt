@@ -48,12 +48,22 @@ open class OfficeEntity {
         if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass.hashCode() else javaClass.hashCode()
 }
 
-fun OfficeEntity.toDto(currencies: MutableSet<CurrencyRateDto>? = null, bank: BankDto? = null): OfficeDto {
+fun OfficeEntity.toDto(
+    currencies: MutableSet<CurrencyRateDto>? = null,
+    bank: BankDto? = null,
+    doINeedOffices: Boolean = false,
+    doINeedCurrencies: Boolean = true,
+    doINeedBank: Boolean = false
+): OfficeDto {
     val officeDto = OfficeDto(this.id, this.address, this.description, this.area)
-    val currencyDtos = currencies ?: this.currencyRateEntities.map { it.toDto() }
-        .takeIf { this.currencyRateEntities.isNotEmpty() } ?: emptySet()
-    officeDto.currencyRates.addAll(currencyDtos)
-    officeDto.bank = bank ?: this.bankEntity?.toDto()
+    if (doINeedCurrencies) {
+        val currencyDtos = currencies ?: this.currencyRateEntities.map { it.toDto() }
+            .takeIf { this.currencyRateEntities.isNotEmpty() } ?: emptySet()
+        officeDto.currencyRates.addAll(currencyDtos)
+    }
+    if (doINeedBank) {
+        officeDto.bank = bank ?: this.bankEntity?.toDto(doINeedOffices = doINeedOffices)
+    }
     return officeDto
 }
 

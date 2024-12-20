@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service
 
 @Service
 interface OfficeService {
-    fun save(office: OfficeDto): OfficeDto
-    fun editByAddress(address: String, office: OfficeDto): OfficeDto?
-    fun getByAddress(address: String): OfficeDto?
-    fun getAll(): List<OfficeDto>
+    fun save(bankId: Long, office: OfficeDto): OfficeDto
+    fun editById(bankId: Long, office: OfficeDto): OfficeDto?
+    fun getById(officeId: Long): OfficeDto?
+    fun getAllByBank(bankId: Long): List<OfficeDto>
 }

@@ -14,42 +14,37 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/currency-rate")
+@RequestMapping("/api/v1/office")
 class CurrencyRateController(val currencyRateService: CurrencyRateService) {
 
     private val log = LoggerFactory.getLogger(CurrencyRateController::class.java)
 
-    @PostMapping
-    fun save(@RequestBody currencyRate: CurrencyRateDto): CurrencyRateDto {
+    @PostMapping("/{id}/currency-rates")
+    fun save(@PathVariable("id") id: Long, @RequestBody currencyRates: List<CurrencyRateDto>): List<CurrencyRateDto> {
         log.debug("Save a currency rate")
-        return currencyRateService.save(currencyRate)
+        return currencyRateService.saveAll(id, currencyRates)
     }
 
-    @PutMapping("/{type}/{rate}")
+    @PutMapping("/{id}/currency-rate")
     fun editByType(
-        @PathVariable("type") type: CurrencyType,
-        @PathVariable("rate") rate: Double
+        @PathVariable("id") id: Long,
+        @RequestBody currencyRate: CurrencyRateDto
     ): CurrencyRateDto? {
-        log.debug("Update currency rate with type {}", type)
-        return currencyRateService.editByType(type, rate)
+        log.debug("Update currency rate with type {} in office with id {}", currencyRate.type, id)
+        return currencyRateService.editByType(id, currencyRate)
     }
 
-    @GetMapping
-    fun getAll(): List<CurrencyRateDto> {
+    @GetMapping("/{id}/currency-rates")
+    fun getAll(@PathVariable("id") id: Long): List<CurrencyRateDto> {
         log.debug("Get all currency rates")
-        return currencyRateService.findAll()
+        return currencyRateService.findAll(id)
     }
 
-    @GetMapping("/{type}")
-    fun getByType(@PathVariable("type") type: CurrencyType): CurrencyRateDto? {
+    @GetMapping("/{id}/currency-rate/type")
+    fun getByType(@PathVariable("id") id: Long, @RequestBody type: CurrencyType): CurrencyRateDto? {
         log.debug("Find the rate of the currency {}", type)
-        return currencyRateService.findByType(type)
+        return currencyRateService.findByType(id, type)
     }
 
-    @DeleteMapping("/{type}")
-    fun deleteByType(@PathVariable("type") type: CurrencyType): List<CurrencyRateDto> {
-        log.debug("Delete currency rate with type {}", type)
-        return currencyRateService.deleteByType(type)
-    }
 
 }

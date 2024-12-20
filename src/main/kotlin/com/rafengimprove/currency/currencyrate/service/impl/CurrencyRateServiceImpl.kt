@@ -6,53 +6,58 @@ import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
 import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
 import com.rafengimprove.currency.currencyrate.service.CurrencyRateService
+import com.rafengimprove.currency.currencyrate.service.OfficeService
+import com.rafengimprove.currency.exception.ElementDoesNotExist
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class CurrencyRateServiceImpl(private val currencyRateRepository: CurrencyRateRepository) : CurrencyRateService {
+class CurrencyRateServiceImpl(
+    private val currencyRateRepository: CurrencyRateRepository,
+    private val officeService: OfficeService
+    ) : CurrencyRateService {
 
     private val log = LoggerFactory.getLogger(CurrencyRateServiceImpl::class.java)
 
-    override fun save(currencyRate: CurrencyRateDto): CurrencyRateDto {
+    override fun saveAll(officeId: Long, currencyRates: List<CurrencyRateDto>): List<CurrencyRateDto> {
         log.debug("Create a new currency rate")
-        return if (currencyRateRepository.existsByType(currencyRate.type)) {
-            editByType(currencyRate.type, currencyRate.rate)!!
+        return if (officeService.getById(officeId)?.currencyRates?.isEmpty() ?: throw ElementDoesNotExist("There is no office with that id")) {
+            val currencyRateEntities = currencyRates.map { it.toEntity(officeService.getById(officeId)?.toEntity()) }
+            currencyRateRepository.saveAll(currencyRateEntities)
+            currencyRateEntities.map { it.toDto(doINeedCurrencies = false) }
         } else {
-            currencyRateRepository.save(currencyRate.toEntity()).toDto()
+            findAll(officeId)
         }
     }
 
-    override fun editByType(type: CurrencyType, rate: Double): CurrencyRateDto? {
-        log.debug("Edit currency rate by type {}", type)
-        if (currencyRateRepository.existsByType(type)) {
-            val currencyToUpdate = findByType(type)
-            currencyToUpdate?.rate = rate
-            return currencyRateRepository.save(currencyToUpdate!!.toEntity()).toDto()
+    override fun editByType(officeId: Long, currencyRateDto: CurrencyRateDto): CurrencyRateDto? {
+        log.debug("Edit currency rate by type {}", currencyRateDto.type)
+        val officeToChangeCurrency = officeService.getById(officeId)
+        return if (officeToChangeCurrency != null && officeToChangeCurrency.currencyRates.any { it.type == currencyRateDto.type } ) {
+            val currencyToUpdate = findByType(officeId, currencyRateDto.type)
+            currencyToUpdate?.rate = currencyRateDto.rate
+            currencyRateRepository.save(currencyToUpdate!!.toEntity()).toDto()
+        } else {
+            throw ElementDoesNotExist("There is no office with that id or it doesn't have that currency type")
         }
-        return null
     }
 
-    override fun findAll(): List<CurrencyRateDto> {
+    override fun findAll(officeId: Long): List<CurrencyRateDto> {
         log.debug("Get all currency rates")
-        return currencyRateRepository.findAll().map { it.toDto() }
-    }
-
-    override fun findByType(type: CurrencyType): CurrencyRateDto? {
-        log.debug("Get currency rate by type {}", type)
-       return if (currencyRateRepository.existsByType(type)) {
-           currencyRateRepository.findByType(type).toDto()
-       } else {
-           null
-       }
-    }
-
-    override fun deleteByType(type: CurrencyType): List<CurrencyRateDto> {
-        log.debug("Delete currency rate by type {}", type)
-        val currencyToDelete = findByType(type)
-        currencyToDelete.let {
-            currencyRateRepository.delete(currencyToDelete!!.toEntity())
+        return if (officeService.getById(officeId) != null) {
+            officeService.getById(officeId)?.currencyRates!!.toList()
+        } else {
+            throw ElementDoesNotExist("There is no office with that id")
         }
-        return findAll()
+    }
+
+    override fun findByType(officeId: Long, type: CurrencyType): CurrencyRateDto? {
+        log.debug("Get currency rate by type {}", type)
+        val officeToShowCurrency = officeService.getById(officeId)
+        return if (officeToShowCurrency != null && officeToShowCurrency.currencyRates.any { it.type == type} ) {
+            officeService.getById(officeId)?.currencyRates?.first { it.type == type }
+        } else {
+            throw ElementDoesNotExist("There is no office with that id")
+        }
     }
 }

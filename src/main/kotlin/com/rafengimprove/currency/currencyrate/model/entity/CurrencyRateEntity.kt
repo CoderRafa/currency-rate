@@ -1,6 +1,7 @@
 package com.rafengimprove.currency.currencyrate.model.entity
 
 import com.rafengimprove.currency.currencyrate.model.dto.CurrencyRateDto
+import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
 import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
 import jakarta.persistence.*
 import org.hibernate.proxy.HibernateProxy
@@ -44,4 +45,8 @@ open class CurrencyRateEntity {
         if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass.hashCode() else javaClass.hashCode()
 }
 
-fun CurrencyRateEntity.toDto(): CurrencyRateDto = CurrencyRateDto(id, type, rate)
+fun CurrencyRateEntity.toDto(office: OfficeDto? = null, doINeedCurrencies: Boolean = false): CurrencyRateDto {
+    val currencyRateDto = CurrencyRateDto(this.id, this.type, this.rate)
+    currencyRateDto.officeDto = office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies)
+    return currencyRateDto
+}

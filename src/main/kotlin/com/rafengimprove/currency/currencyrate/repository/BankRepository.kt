@@ -12,5 +12,5 @@ interface BankRepository: CrudRepository<BankEntity, Long> {
 
 
     @Query("select b from BankEntity b where upper(b.name) = upper(?1)")
-    fun findByName(name: String): BankEntity
+    fun findByName(name: String): BankEntity?
 }

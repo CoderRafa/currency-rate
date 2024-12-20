@@ -4,9 +4,8 @@ import com.rafengimprove.currency.currencyrate.model.dto.CurrencyRateDto
 import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
 
 interface CurrencyRateService {
-    fun save(currencyRate: CurrencyRateDto): CurrencyRateDto
-    fun editByType(type: CurrencyType, rate: Double): CurrencyRateDto?
-    fun findAll(): List<CurrencyRateDto>
-    fun findByType(type: CurrencyType): CurrencyRateDto?
-    fun deleteByType(type: CurrencyType): List<CurrencyRateDto>
+    fun saveAll(officeId: Long, currencyRates: List<CurrencyRateDto>): List<CurrencyRateDto>
+    fun editByType(officeId: Long, currencyRateDto: CurrencyRateDto): CurrencyRateDto?
+    fun findAll(officeId: Long): List<CurrencyRateDto>
+    fun findByType(officeId: Long, type: CurrencyType): CurrencyRateDto?
 }

@@ -4,47 +4,48 @@ import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.repository.OfficeRepository
+import com.rafengimprove.currency.currencyrate.service.BankService
 import com.rafengimprove.currency.currencyrate.service.OfficeService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class OfficeServiceImpl(val officeRepository: OfficeRepository) : OfficeService {
+class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankService: BankService) : OfficeService {
 
     private val log = LoggerFactory.getLogger(OfficeServiceImpl::class.java)
-    override fun save(office: OfficeDto): OfficeDto {
-        return if (officeRepository.existsByAddressIgnoreCase(office.address)) {
-            officeRepository.findByAddressIgnoreCase(office.address).toDto()
+
+    override fun save(bankId: Long, office: OfficeDto): OfficeDto {
+        return if (officeRepository.existsByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)) {
+            officeRepository.findByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId).toDto(doINeedOffices = false)
         } else {
-            officeRepository.save(office.toEntity()).toDto()
+            officeRepository.save(office.toEntity(bankService.getById(bankId))).toDto(doINeedOffices = false, doINeedBank = true)
         }
     }
 
-    override fun editByAddress(address: String, office: OfficeDto): OfficeDto? {
-        return if (officeRepository.existsByAddressIgnoreCase(address)) {
-            val officeToUpdate = getByAddress(address)
+    override fun editById(bankId: Long, office: OfficeDto): OfficeDto? {
+        return if (officeRepository.existsById(office.id!!)) {
+            val officeToUpdate = getById(office.id)
             officeToUpdate?.address = office.address
             officeToUpdate?.description = office.description
             officeToUpdate?.area = office.area
             officeToUpdate?.bank = office.bank
             officeToUpdate?.currencyRates = office.currencyRates.map { it.toEntity().toDto() }.toMutableSet()
-            officeRepository.save(officeToUpdate!!.toEntity()).toDto()
+            officeRepository.save(officeToUpdate!!.toEntity(bankService.getById(bankId))).toDto(doINeedOffices = false, doINeedBank = true)
         } else {
             null
         }
     }
 
-    override fun getByAddress(address: String): OfficeDto? {
-        return if (officeRepository.existsByAddressIgnoreCase(address)) {
-            officeRepository.findByAddressIgnoreCase(address).toDto()
+    override fun getById(officeId: Long): OfficeDto? {
+        return if (officeRepository.existsById(officeId)) {
+            officeRepository.findById(officeId).map { it.toDto(doINeedOffices = false) }.orElseThrow()
         } else {
             null
         }
     }
 
-    override fun getAll(): List<OfficeDto> {
-        return officeRepository.findAll().map { it.toDto() }
+    override fun getAllByBank(bankId: Long): List<OfficeDto> {
+        return officeRepository.findByBankEntity_Id(bankId).map { it.toDto(doINeedOffices = false) }
     }
-
 
 }
