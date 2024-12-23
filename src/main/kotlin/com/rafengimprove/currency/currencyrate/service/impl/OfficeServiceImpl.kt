@@ -3,6 +3,7 @@ package com.rafengimprove.currency.currencyrate.service.impl
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
+import com.rafengimprove.currency.currencyrate.repository.BankRepository
 import com.rafengimprove.currency.currencyrate.repository.OfficeRepository
 import com.rafengimprove.currency.currencyrate.service.BankService
 import com.rafengimprove.currency.currencyrate.service.OfficeService
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankService: BankService) : OfficeService {
+class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankRepository: BankRepository) : OfficeService {
 
     private val log = LoggerFactory.getLogger(OfficeServiceImpl::class.java)
 
@@ -18,7 +19,7 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankService:
         return if (officeRepository.existsByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)) {
             officeRepository.findByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId).toDto(doINeedOffices = false)
         } else {
-            officeRepository.save(office.toEntity(bankService.getById(bankId))).toDto(doINeedOffices = false, doINeedBank = true)
+            officeRepository.save(office.toEntity(bankRepository.findById(bankId).get())).toDto(doINeedOffices = false, doINeedBank = true)
         }
     }
 
@@ -30,7 +31,7 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankService:
             officeToUpdate?.area = office.area
             officeToUpdate?.bank = office.bank
             officeToUpdate?.currencyRates = office.currencyRates.map { it.toEntity().toDto() }.toMutableSet()
-            officeRepository.save(officeToUpdate!!.toEntity(bankService.getById(bankId))).toDto(doINeedOffices = false, doINeedBank = true)
+            officeRepository.save(officeToUpdate!!.toEntity(bankRepository.findById(bankId).get())).toDto(doINeedOffices = false, doINeedBank = true)
         } else {
             null
         }

@@ -35,7 +35,8 @@ class CurrencyRateServiceImpl(
         val officeToChangeCurrency = officeService.getById(officeId)
         return if (officeToChangeCurrency != null && officeToChangeCurrency.currencyRates.any { it.type == currencyRateDto.type } ) {
             val currencyToUpdate = findByType(officeId, currencyRateDto.type)
-            currencyToUpdate?.rate = currencyRateDto.rate
+            currencyToUpdate?.buyRate = currencyRateDto.buyRate
+            currencyToUpdate?.sellRate = currencyRateDto.sellRate
             currencyRateRepository.save(currencyToUpdate!!.toEntity()).toDto()
         } else {
             throw ElementDoesNotExist("There is no office with that id or it doesn't have that currency type")

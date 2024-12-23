@@ -19,8 +19,12 @@ open class CurrencyRateEntity {
     @Column(name = "type", nullable = false)
     open lateinit var type: CurrencyType
 
-    @Column(name = "rate", nullable = false)
-    open var rate: Double = 0.0
+    @Column(name = "buy_rate")
+    open var buyRate: Double? = null
+
+
+    @Column(name = "sell_rate")
+    open var sellRate: Double? = null
 
     @ManyToOne(cascade = [CascadeType.REFRESH])
     @JoinColumn(name = "office_entity_id")
@@ -46,7 +50,7 @@ open class CurrencyRateEntity {
 }
 
 fun CurrencyRateEntity.toDto(office: OfficeDto? = null, doINeedCurrencies: Boolean = false): CurrencyRateDto {
-    val currencyRateDto = CurrencyRateDto(this.id, this.type, this.rate)
+    val currencyRateDto = CurrencyRateDto(this.id, this.type, this.buyRate, this.sellRate)
     currencyRateDto.officeDto = office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies)
     return currencyRateDto
 }

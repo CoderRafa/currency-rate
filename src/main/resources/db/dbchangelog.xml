@@ -5,4 +5,5 @@
                    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
     <include file="db/migration/V1/V1__initial-changelog.yaml"/>
     <include file="db/migration/V1/V1_1_add_bank-entity_and_office-entity.yaml"/>
+    <include file="db/migration/V1/V1-2-change-rate-to-sell-rate-and-buy-rate.yaml"/>
 </databaseChangeLog>
