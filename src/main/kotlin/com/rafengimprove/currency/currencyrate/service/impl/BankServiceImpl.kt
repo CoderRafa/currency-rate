@@ -2,7 +2,6 @@ package com.rafengimprove.currency.currencyrate.service.impl
 
 import com.rafengimprove.currency.currencyrate.model.dto.BankDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
-import com.rafengimprove.currency.currencyrate.model.entity.BankEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.repository.BankRepository
 import com.rafengimprove.currency.currencyrate.service.BankService
@@ -47,7 +46,7 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
 
     override fun getAll(): List<BankDto> {
         log.debug("Get all banks")
-        return bankRepository.findAll().map { it.toDto(doINeedOffices = true) }
+        return bankRepository.findAll().map { it.toDto(doINeedOffices = true, doINeedCurrencies = true) }
     }
 }
 

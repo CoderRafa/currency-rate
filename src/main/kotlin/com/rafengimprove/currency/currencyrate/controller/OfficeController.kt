@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*
 class OfficeController(val officeService: OfficeService) {
 
     @PostMapping("/bank/{id}/office")
-    fun save(@PathVariable("id") id: Long, @RequestBody office: OfficeDto): OfficeDto {
-        return officeService.save(id, office)
+    fun save(@PathVariable("id") id: Long, @RequestBody offices: List<OfficeDto>): List<OfficeDto> {
+        return officeService.save(id, offices)
     }
 
     @GetMapping("/bank/{id}/office")

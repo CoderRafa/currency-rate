@@ -3,6 +3,7 @@ package com.rafengimprove.currency.currencyrate.service.impl
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
+import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
 import com.rafengimprove.currency.currencyrate.repository.BankRepository
 import com.rafengimprove.currency.currencyrate.repository.OfficeRepository
 import com.rafengimprove.currency.currencyrate.service.BankService
@@ -15,12 +16,18 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
 
     private val log = LoggerFactory.getLogger(OfficeServiceImpl::class.java)
 
-    override fun save(bankId: Long, office: OfficeDto): OfficeDto {
-        return if (officeRepository.existsByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)) {
-            officeRepository.findByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId).toDto(doINeedOffices = false)
-        } else {
-            officeRepository.save(office.toEntity(bankRepository.findById(bankId).get())).toDto(doINeedOffices = false, doINeedBank = true)
+    override fun save(bankId: Long, offices: List<OfficeDto>): List<OfficeDto> {
+        val officesList = mutableListOf<OfficeDto>()
+        for (office in offices) {
+            if (officeRepository.existsByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)) {
+                officesList.add(officeRepository.findByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)
+                    .toDto(doINeedOffices = false))
+            } else {
+                officesList.add(officeRepository.save(office.toEntity(bankRepository.findById(bankId).get()))
+                    .toDto(doINeedOffices = false, doINeedBank = true))
+            }
         }
+        return officesList
     }
 
     override fun editById(bankId: Long, office: OfficeDto): OfficeDto? {
@@ -31,7 +38,7 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
             officeToUpdate?.area = office.area
             officeToUpdate?.bank = office.bank
             officeToUpdate?.currencyRates = office.currencyRates.map { it.toEntity().toDto() }.toMutableSet()
-            officeRepository.save(officeToUpdate!!.toEntity(bankRepository.findById(bankId).get())).toDto(doINeedOffices = false, doINeedBank = true)
+            officeRepository.save(officeToUpdate!!.toEntity(bankRepository.findById(bankId).get())).toDto()
         } else {
             null
         }
@@ -46,7 +53,6 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
     }
 
     override fun getAllByBank(bankId: Long): List<OfficeDto> {
-        return officeRepository.findByBankEntity_Id(bankId).map { it.toDto(doINeedOffices = false) }
+        return officeRepository.findByBankEntity_Id(bankId).map { it.toDto(doINeedBank = false) }
     }
-
 }

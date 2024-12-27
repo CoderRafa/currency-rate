@@ -49,8 +49,13 @@ open class CurrencyRateEntity {
         if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass.hashCode() else javaClass.hashCode()
 }
 
-fun CurrencyRateEntity.toDto(office: OfficeDto? = null, doINeedCurrencies: Boolean = false): CurrencyRateDto {
+fun CurrencyRateEntity.toDto(
+    office: OfficeDto? = null,
+    doINeedCurrencies: Boolean = false,
+    doINeedOffice: Boolean = false): CurrencyRateDto {
     val currencyRateDto = CurrencyRateDto(this.id, this.type, this.buyRate, this.sellRate)
-    currencyRateDto.officeDto = office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies)
+    if (doINeedOffice) {
+        currencyRateDto.officeDto = office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies, doINeedBank = true)
+    }
     return currencyRateDto
 }
