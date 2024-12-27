@@ -2,7 +2,7 @@ package com.rafengimprove.currency.currencyrate.model.entity
 
 import com.rafengimprove.currency.currencyrate.model.dto.CurrencyRateDto
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
-import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import jakarta.persistence.*
 import org.hibernate.proxy.HibernateProxy
 

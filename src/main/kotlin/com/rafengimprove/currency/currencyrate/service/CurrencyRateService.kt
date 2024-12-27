@@ -1,7 +1,7 @@
 package com.rafengimprove.currency.currencyrate.service
 
 import com.rafengimprove.currency.currencyrate.model.dto.CurrencyRateDto
-import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 

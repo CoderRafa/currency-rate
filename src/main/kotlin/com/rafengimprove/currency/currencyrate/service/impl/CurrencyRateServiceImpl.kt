@@ -3,16 +3,14 @@ package com.rafengimprove.currency.currencyrate.service.impl
 import com.rafengimprove.currency.currencyrate.model.dto.CurrencyRateDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
-import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
 import com.rafengimprove.currency.currencyrate.service.CurrencyRateService
 import com.rafengimprove.currency.currencyrate.service.OfficeService
 import com.rafengimprove.currency.exception.ElementDoesNotExist
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.data.util.Streamable
 import org.springframework.stereotype.Service
 
 

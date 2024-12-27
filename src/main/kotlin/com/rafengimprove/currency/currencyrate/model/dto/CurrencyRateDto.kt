@@ -2,7 +2,7 @@ package com.rafengimprove.currency.currencyrate.model.dto
 
 import com.rafengimprove.currency.currencyrate.model.entity.CurrencyRateEntity
 import com.rafengimprove.currency.currencyrate.model.entity.OfficeEntity
-import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 
 data class CurrencyRateDto(
     val id: Long? = null,

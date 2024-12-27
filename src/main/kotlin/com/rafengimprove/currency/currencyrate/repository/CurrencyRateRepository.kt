@@ -1,7 +1,7 @@
 package com.rafengimprove.currency.currencyrate.repository
 
 import com.rafengimprove.currency.currencyrate.model.entity.CurrencyRateEntity
-import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import org.springframework.data.domain.Page

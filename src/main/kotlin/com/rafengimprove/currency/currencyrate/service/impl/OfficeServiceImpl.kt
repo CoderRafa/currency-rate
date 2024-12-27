@@ -2,13 +2,19 @@ package com.rafengimprove.currency.currencyrate.service.impl
 
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
+import com.rafengimprove.currency.currencyrate.model.entity.OfficeEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
-import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType.BUY
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType.SELL
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.repository.BankRepository
 import com.rafengimprove.currency.currencyrate.repository.OfficeRepository
-import com.rafengimprove.currency.currencyrate.service.BankService
 import com.rafengimprove.currency.currencyrate.service.OfficeService
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 @Service
@@ -54,5 +60,17 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
 
     override fun getAllByBank(bankId: Long): List<OfficeDto> {
         return officeRepository.findByBankEntity_Id(bankId).map { it.toDto(doINeedBank = false) }
+    }
+
+    override fun findOfficesBy(
+        currencyType: CurrencyType,
+        currencyDirectionType: CurrencyDirectionType,
+        pageable: Pageable
+    ): Page<OfficeDto> {
+        log.debug("Find rates by the type: {} and direction: {}", currencyType, currencyDirectionType)
+        return when(currencyDirectionType) {
+            BUY       -> officeRepository.findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_SellRateAsc(currencyType, pageable)
+            SELL      -> officeRepository.findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_BuyRateDesc(currencyType, pageable)
+        }.map(OfficeEntity::toDto)
     }
 }
