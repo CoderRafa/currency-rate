@@ -2,7 +2,7 @@ package com.rafengimprove.currency.currencyrate.model.entity
 
 import com.rafengimprove.currency.currencyrate.model.dto.CurrencyRateDto
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
-import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import jakarta.persistence.*
 import org.hibernate.proxy.HibernateProxy
 
@@ -19,8 +19,12 @@ open class CurrencyRateEntity {
     @Column(name = "type", nullable = false)
     open lateinit var type: CurrencyType
 
-    @Column(name = "rate", nullable = false)
-    open var rate: Double = 0.0
+    @Column(name = "buy_rate")
+    open var buyRate: Double? = null
+
+
+    @Column(name = "sell_rate")
+    open var sellRate: Double? = null
 
     @ManyToOne(cascade = [CascadeType.REFRESH])
     @JoinColumn(name = "office_entity_id")
@@ -45,8 +49,13 @@ open class CurrencyRateEntity {
         if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass.hashCode() else javaClass.hashCode()
 }
 
-fun CurrencyRateEntity.toDto(office: OfficeDto? = null, doINeedCurrencies: Boolean = false): CurrencyRateDto {
-    val currencyRateDto = CurrencyRateDto(this.id, this.type, this.rate)
-    currencyRateDto.officeDto = office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies)
+fun CurrencyRateEntity.toDto(
+    office: OfficeDto? = null,
+    doINeedCurrencies: Boolean = false,
+    doINeedOffice: Boolean = false): CurrencyRateDto {
+    val currencyRateDto = CurrencyRateDto(this.id, this.type, this.buyRate, this.sellRate)
+    if (doINeedOffice) {
+        currencyRateDto.officeDto = office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies, doINeedBank = true)
+    }
     return currencyRateDto
 }

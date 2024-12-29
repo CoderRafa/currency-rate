@@ -53,7 +53,7 @@ fun OfficeEntity.toDto(
     bank: BankDto? = null,
     doINeedOffices: Boolean = false,
     doINeedCurrencies: Boolean = true,
-    doINeedBank: Boolean = false
+    doINeedBank: Boolean = true
 ): OfficeDto {
     val officeDto = OfficeDto(this.id, this.address, this.description, this.area)
     if (doINeedCurrencies) {

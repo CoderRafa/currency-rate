@@ -23,16 +23,21 @@ open class BankEntity {
     open var officeEntities: MutableSet<OfficeEntity> = mutableSetOf()
 }
 
-fun BankEntity.toDto(offices: MutableSet<OfficeDto>? = null, doINeedOffices: Boolean = true): BankDto {
+fun BankEntity.toDto(
+    offices: MutableSet<OfficeDto>? = null,
+    doINeedOffices: Boolean = true,
+    doINeedCurrencies: Boolean = false
+    ): BankDto {
 
     val bankDto = BankDto(
         this.id, this.name, this.description
     )
 
     if (doINeedOffices) {
-        val officeDtos = offices ?: this.officeEntities.map { it.toDto(bank = bankDto, doINeedOffices = false) }
+        val officeDtos = offices ?: this.officeEntities.map { it.toDto(bank = bankDto, doINeedOffices = doINeedCurrencies, doINeedBank = false) }
             .takeIf { this.officeEntities.isNotEmpty() } ?: emptySet()
         bankDto.offices.addAll(officeDtos)
     }
+
     return bankDto
 }

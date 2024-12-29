@@ -1,17 +1,10 @@
 package com.rafengimprove.currency.currencyrate.controller
 
 import com.rafengimprove.currency.currencyrate.model.dto.CurrencyRateDto
-import com.rafengimprove.currency.currencyrate.model.enumerated.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.service.CurrencyRateService
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/office")
@@ -41,10 +34,8 @@ class CurrencyRateController(val currencyRateService: CurrencyRateService) {
     }
 
     @GetMapping("/{id}/currency-rate/type")
-    fun getByType(@PathVariable("id") id: Long, @RequestBody type: CurrencyType): CurrencyRateDto? {
+    fun getByTypeByOffice(@PathVariable("id") id: Long, @RequestBody type: CurrencyType): CurrencyRateDto? {
         log.debug("Find the rate of the currency {}", type)
-        return currencyRateService.findByType(id, type)
+        return currencyRateService.findByTypeByOffice(id, type)
     }
-
-
 }

@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1734957858625-1
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: buy_rate
+                  type: DOUBLE
+              - column:
+                  name: sell_rate
+                  type: DOUBLE
+            tableName: currency_rate
+  - changeSet:
+      id: 1734957858625-3
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - dropColumn:
+            columnName: rate
+            tableName: currency_rate
+

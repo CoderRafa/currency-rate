@@ -2,24 +2,38 @@ package com.rafengimprove.currency.currencyrate.service.impl
 
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
+import com.rafengimprove.currency.currencyrate.model.entity.OfficeEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType.BUY
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType.SELL
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
+import com.rafengimprove.currency.currencyrate.repository.BankRepository
 import com.rafengimprove.currency.currencyrate.repository.OfficeRepository
-import com.rafengimprove.currency.currencyrate.service.BankService
 import com.rafengimprove.currency.currencyrate.service.OfficeService
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 @Service
-class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankService: BankService) : OfficeService {
+class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankRepository: BankRepository) : OfficeService {
 
     private val log = LoggerFactory.getLogger(OfficeServiceImpl::class.java)
 
-    override fun save(bankId: Long, office: OfficeDto): OfficeDto {
-        return if (officeRepository.existsByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)) {
-            officeRepository.findByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId).toDto(doINeedOffices = false)
-        } else {
-            officeRepository.save(office.toEntity(bankService.getById(bankId))).toDto(doINeedOffices = false, doINeedBank = true)
+    override fun save(bankId: Long, offices: List<OfficeDto>): List<OfficeDto> {
+        val officesList = mutableListOf<OfficeDto>()
+        for (office in offices) {
+            if (officeRepository.existsByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)) {
+                officesList.add(officeRepository.findByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)
+                    .toDto(doINeedOffices = false))
+            } else {
+                officesList.add(officeRepository.save(office.toEntity(bankRepository.findById(bankId).get()))
+                    .toDto(doINeedOffices = false, doINeedBank = true))
+            }
         }
+        return officesList
     }
 
     override fun editById(bankId: Long, office: OfficeDto): OfficeDto? {
@@ -30,7 +44,7 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankService:
             officeToUpdate?.area = office.area
             officeToUpdate?.bank = office.bank
             officeToUpdate?.currencyRates = office.currencyRates.map { it.toEntity().toDto() }.toMutableSet()
-            officeRepository.save(officeToUpdate!!.toEntity(bankService.getById(bankId))).toDto(doINeedOffices = false, doINeedBank = true)
+            officeRepository.save(officeToUpdate!!.toEntity(bankRepository.findById(bankId).get())).toDto()
         } else {
             null
         }
@@ -45,7 +59,18 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankService:
     }
 
     override fun getAllByBank(bankId: Long): List<OfficeDto> {
-        return officeRepository.findByBankEntity_Id(bankId).map { it.toDto(doINeedOffices = false) }
+        return officeRepository.findByBankEntity_Id(bankId).map { it.toDto(doINeedBank = false) }
     }
 
+    override fun findOfficesBy(
+        currencyType: CurrencyType,
+        currencyDirectionType: CurrencyDirectionType,
+        pageable: Pageable
+    ): Page<OfficeDto> {
+        log.debug("Find rates by the type: {} and direction: {}", currencyType, currencyDirectionType)
+        return when(currencyDirectionType) {
+            BUY       -> officeRepository.findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_SellRateAsc(currencyType, pageable)
+            SELL      -> officeRepository.findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_BuyRateDesc(currencyType, pageable)
+        }.map(OfficeEntity::toDto)
+    }
 }

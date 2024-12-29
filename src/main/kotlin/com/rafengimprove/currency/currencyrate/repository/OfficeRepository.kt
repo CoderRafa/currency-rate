@@ -1,11 +1,14 @@
 package com.rafengimprove.currency.currencyrate.repository
 
 import com.rafengimprove.currency.currencyrate.model.entity.OfficeEntity
-import org.springframework.data.repository.CrudRepository
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface OfficeRepository: CrudRepository<OfficeEntity, Long> {
+interface OfficeRepository: JpaRepository<OfficeEntity, Long> {
 
     fun existsByAddressIgnoreCase(address: String): Boolean
 
@@ -20,6 +23,18 @@ interface OfficeRepository: CrudRepository<OfficeEntity, Long> {
 
 
     fun findByBankEntity_Id(id: Long): List<OfficeEntity>
+
+
+    fun findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_BuyRateDesc(
+        type: CurrencyType,
+        pageable: Pageable
+    ): Page<OfficeEntity>
+
+
+    fun findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_SellRateAsc(
+        type: CurrencyType,
+        pageable: Pageable
+    ): Page<OfficeEntity>
 
 
 }
