@@ -5,6 +5,7 @@ import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -36,5 +37,10 @@ interface OfficeRepository: JpaRepository<OfficeEntity, Long> {
         pageable: Pageable
     ): Page<OfficeEntity>
 
-
+    @Query("""
+        select o from OfficeEntity o 
+        join fetch o.currencyRateEntities cr
+        where cr.type = :type
+    """)
+    fun findOfficesWorkingWithType(type: CurrencyType, pageable: Pageable): Page<OfficeEntity>
 }
