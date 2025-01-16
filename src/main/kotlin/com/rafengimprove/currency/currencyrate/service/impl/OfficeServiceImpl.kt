@@ -73,4 +73,8 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
             SELL      -> officeRepository.findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_BuyRateDesc(currencyType, pageable)
         }.map(OfficeEntity::toDto)
     }
+
+    override fun findOfficesWorkingWithType(type: CurrencyType, pageable: Pageable): Page<OfficeDto> {
+        return officeRepository.findOfficesWorkingWithType(type, pageable).map { it.toDto(doINeedBank = false) }
+    }
 }

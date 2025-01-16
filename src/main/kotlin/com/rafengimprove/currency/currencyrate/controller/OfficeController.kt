@@ -47,4 +47,14 @@ class OfficeController(val officeService: OfficeService) {
 
         return officeService.findOfficesBy(currencyType, currencyDirectionType, pageable)
     }
+
+    @GetMapping("/office/work_with")
+    fun getOfficeWorkingWithType(
+        @RequestParam currencyType: CurrencyType,
+        @PageableDefault(size = 10, page = 0) pageable: Pageable
+    ): Page<OfficeDto> {
+        log.info("Find offices that work with currency {}", currencyType)
+
+        return officeService.findOfficesWorkingWithType(currencyType, pageable)
+    }
 }

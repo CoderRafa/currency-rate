@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 
 @WebMvcTest(BankControllerTest::class)
-class BankControllerTest @Autowired constructor(private val mockMvc: MockMvc){
+class BankControllerTest @Autowired constructor(private val mockMvc: MockMvc) {
 
     @MockkBean
     lateinit var bankService: BankService
@@ -39,7 +39,7 @@ class BankControllerTest @Autowired constructor(private val mockMvc: MockMvc){
         }.andExpect {
             status { isOk() }
             content { contentType(MediaType.APPLICATION_JSON) }
-            jsonPath("$.id") { value(newBank.id)}
+            jsonPath("$.id") { value(newBank.id) }
         }
 
         verify(exactly = 1) { bankService.save(any()) }
