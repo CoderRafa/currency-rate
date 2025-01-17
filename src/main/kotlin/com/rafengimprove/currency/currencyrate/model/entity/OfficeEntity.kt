@@ -31,6 +31,9 @@ open class OfficeEntity {
     @JoinColumn(name = "bank_entity_id")
     open var bankEntity: BankEntity? = null
 
+    @OneToOne(mappedBy = "officeEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    open var exchangeOperationEntity: ExchangeOperationEntity? = null
+
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null) return false
