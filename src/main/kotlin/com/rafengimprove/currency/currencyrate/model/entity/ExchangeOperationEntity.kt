@@ -66,8 +66,9 @@ open class ExchangeOperationEntity {
 
 fun ExchangeOperationEntity.toDto(
     office: OfficeDto? = null,
-    client: ClientDto? = null
-) {
+    client: ClientDto? = null,
+    doINeedClient: Boolean = false
+): ExchangeOperationDto {
     val exchangeOperationDto = ExchangeOperationDto(
         this.id, this.currencyDirectionType,
         this.preExchangeAmount, this.preExchangeCurrencyType,
@@ -80,4 +81,6 @@ fun ExchangeOperationEntity.toDto(
 
     exchangeOperationDto.officeDto = officeDto
     exchangeOperationDto.clientDto = clientDto
+
+    return exchangeOperationDto
 }

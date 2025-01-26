@@ -34,7 +34,7 @@ fun BankEntity.toDto(
     )
 
     if (doINeedOffices) {
-        val officeDtos = offices ?: this.officeEntities.map { it.toDto(bank = bankDto, doINeedOffices = doINeedCurrencies, doINeedBank = false) }
+        val officeDtos = offices ?: this.officeEntities.map { it.toDto(bank = bankDto, doINeedCurrencies = doINeedCurrencies, doINeedBank = false) }
             .takeIf { this.officeEntities.isNotEmpty() } ?: emptySet()
         bankDto.offices.addAll(officeDtos)
     }

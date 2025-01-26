@@ -8,7 +8,7 @@ import com.rafengimprove.currency.currencyrate.model.entity.ExchangeOperationEnt
  */
 data class ClientDto(
     val id: Long? = null,
-    val firsName: String? = null,
+    val firstName: String? = null,
     val lastName: String? = null,
     val passportNumber: String? = null,
     val email: String? = null
@@ -18,9 +18,9 @@ data class ClientDto(
 
 fun ClientDto.toEntity(exchangeOperations: MutableSet<ExchangeOperationEntity>? = null) = ClientEntity().apply {
     this.id = this@toEntity.id
-    this.firsName = this@toEntity.firsName
+    this.firstName = this@toEntity.firstName
     this.lastName = this@toEntity.lastName
     this.passportNumber = this@toEntity.passportNumber
     this.email = this@toEntity.email
-    this.exchangeOperationEntities = exchangeOperations ?: this@toEntity.exchangeOperations.map { it.toEntity() }.toMutableSet() ?: throw RuntimeException("The exchangeOperations is still null")
+    this.exchangeOperationEntities = this@toEntity.exchangeOperations.map { it.toEntity(clientEntity = this) }.toMutableSet()
 }

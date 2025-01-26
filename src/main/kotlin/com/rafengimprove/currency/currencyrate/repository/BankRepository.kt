@@ -14,7 +14,7 @@ interface BankRepository : JpaRepository<BankEntity, Long> {
     fun existsByNameIgnoreCase(name: String): Boolean
 
 
-    @Query("select b from BankEntity b where upper(b.name) = upper(?1)")
+    @Query("select b from BankEntity b where upper(b.name) = upper(?1)", nativeQuery = false)
     fun findByName(name: String): BankEntity?
 
     @Query(

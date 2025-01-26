@@ -5,7 +5,7 @@ import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "clent")
+@Table(name = "client")
 open class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
@@ -14,7 +14,7 @@ open class ClientEntity {
     open var id: Long? = null
 
     @Column(name = "firs_name")
-    open var firsName: String? = null
+    open var firstName: String? = null
 
     @Column(name = "last_name")
     open var lastName: String? = null
@@ -27,14 +27,24 @@ open class ClientEntity {
 
     @OneToMany(mappedBy = "clientEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
     open var exchangeOperationEntities: MutableSet<ExchangeOperationEntity> = mutableSetOf()
+
+    @OneToMany(mappedBy = "clientEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    open var clientStatsEntities: MutableSet<ClientStatsEntity> = mutableSetOf()
 }
 
 fun ClientEntity.toDto(
-    exchangeOperations: MutableSet<ExchangeOperationDto>? = null
-) {
-   val clientDto = ClientDto(this.id, this.firsName, this.lastName, this.passportNumber, this.email)
+    exchangeOperations: MutableSet<ExchangeOperationDto>? = null,
+    doINeedExchangeOperations: Boolean = true
+): ClientDto {
+   val clientDto = ClientDto(this.id, this.firstName, this.lastName, this.passportNumber, this.email)
 
-   val exchangeOperationDtos = exchangeOperations ?: this.exchangeOperationEntities.map { it.toDto(client = clientDto) }.takeIf { this.exchangeOperationEntities.isNotEmpty() } ?: emptySet()
+    if (doINeedExchangeOperations) {
+        val exchangeOperationDtos =
+            exchangeOperations ?: this.exchangeOperationEntities.map { it.toDto(client = clientDto, doINeedClient = false) }
+                .takeIf { this.exchangeOperationEntities.isNotEmpty() } ?: emptySet()
 
-    clientDto.exchangeOperations.addAll(exchangeOperationDtos)
+        clientDto.exchangeOperations.addAll(exchangeOperationDtos)
+    }
+
+    return clientDto
 }
