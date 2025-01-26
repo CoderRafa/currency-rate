@@ -1,7 +1,7 @@
 package com.rafengimprove.currency.currencyrate.controller
 
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
-import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.service.OfficeService
 import org.slf4j.LoggerFactory
@@ -40,12 +40,12 @@ class OfficeController(val officeService: OfficeService) {
     @GetMapping("/office")
     fun getByType(
         @RequestParam currencyType: CurrencyType,
-        @RequestParam("currencyDirectionType") currencyDirectionType: CurrencyDirectionType,
+        @RequestParam("operationType") operationType: OperationType,
         @PageableDefault(size = 10, page = 0) pageable: Pageable
     ): Page<OfficeDto> {
-        log.info("Find rates of the currency type {} with direction: {}", currencyType, currencyDirectionType)
+        log.info("Find rates of the currency type {} with direction: {}", currencyType, operationType)
 
-        return officeService.findOfficesBy(currencyType, currencyDirectionType, pageable)
+        return officeService.findOfficesBy(currencyType, operationType, pageable)
     }
 
     @GetMapping("/office/work_with")

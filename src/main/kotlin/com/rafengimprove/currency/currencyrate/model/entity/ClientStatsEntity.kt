@@ -2,13 +2,12 @@ package com.rafengimprove.currency.currencyrate.model.entity
 
 import com.rafengimprove.currency.currencyrate.model.dto.ClientDto
 import com.rafengimprove.currency.currencyrate.model.dto.ClientStatsDto
-import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import jakarta.persistence.*
-import org.hibernate.proxy.HibernateProxy
 
 @Entity
-open class ClientStatsEntity {
+open class ClientStatsEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_stats_seq")
     @SequenceGenerator(name = "client_stats_seq")
@@ -22,7 +21,7 @@ open class ClientStatsEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "currency_direction_type")
-    open var currencyDirectionType: CurrencyDirectionType? = null
+    open var operationType: OperationType? = null
 
     @Column(name = "total")
     open var total: Double? = null
@@ -30,6 +29,17 @@ open class ClientStatsEntity {
     @ManyToOne(cascade = [CascadeType.REFRESH])
     @JoinColumn(name = "client_entity_id")
     open var clientEntity: ClientEntity? = null
+
+    constructor(
+        currencyType: CurrencyType?,
+        operationType: OperationType?,
+        total: Double?
+    ): this() {
+        this.currencyType = currencyType
+        this.operationType = operationType
+        this.total = total
+    }
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -52,7 +62,7 @@ open class ClientStatsEntity {
 
 fun ClientStatsEntity.toDto(clientDto: ClientDto? = null, doINeedClient: Boolean = true): ClientStatsDto {
     val clientStatsDto = ClientStatsDto(
-        this.id, this.currencyType, this.currencyDirectionType, this.total
+        this.id, this.currencyType, this.operationType, this.total
     )
 
     if (doINeedClient) {

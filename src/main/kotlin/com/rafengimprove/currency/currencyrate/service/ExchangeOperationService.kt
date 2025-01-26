@@ -1,7 +1,8 @@
 package com.rafengimprove.currency.currencyrate.service
 
-import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
+import com.rafengimprove.currency.currencyrate.model.dto.ExchangeDataDto
 
 interface ExchangeOperationService {
-   fun save(exchangeOperationDto: ExchangeOperationDto): ExchangeOperationDto?
+   fun add(exchangeOperationDto: ExchangeDataDto)
+    fun exchange(exchangeDataDto: ExchangeDataDto): Boolean
 }

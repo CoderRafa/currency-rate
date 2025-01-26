@@ -3,7 +3,7 @@ package com.rafengimprove.currency.currencyrate.model.entity
 import com.rafengimprove.currency.currencyrate.model.dto.ClientDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
-import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import jakarta.persistence.*
 import org.hibernate.proxy.HibernateProxy
@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "exchange_operation")
-open class ExchangeOperationEntity {
+open class ExchangeOperationEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "exchange_operation_seq")
     @SequenceGenerator(name = "exchange_operation_seq")
@@ -20,7 +20,7 @@ open class ExchangeOperationEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "currency_direction_type")
-    lateinit var currencyDirectionType: CurrencyDirectionType
+    lateinit var operationType: OperationType
 
     @Column(name = "pre_exchange_amount")
     open var preExchangeAmount: Double = 0.0
@@ -47,6 +47,20 @@ open class ExchangeOperationEntity {
     @JoinColumn(name = "client_entity_id")
     open var clientEntity: ClientEntity? = null
 
+    constructor(
+        operationType: OperationType,
+        preExchangeAmount: Double,
+        preExchangeCurrencyType: CurrencyType,
+        postExchangeCurrencyType: CurrencyType,
+        dateAndTimeOfExchange: LocalDateTime
+    ): this() {
+        this.operationType = operationType
+        this.preExchangeAmount = preExchangeAmount
+        this.preExchangeCurrencyType = preExchangeCurrencyType
+        this.postExchangeCurrencyType = postExchangeCurrencyType
+        this.dateAndTimeOfExchange = dateAndTimeOfExchange
+    }
+
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null) return false
@@ -70,7 +84,7 @@ fun ExchangeOperationEntity.toDto(
     doINeedClient: Boolean = false
 ): ExchangeOperationDto {
     val exchangeOperationDto = ExchangeOperationDto(
-        this.id, this.currencyDirectionType,
+        this.id, this.operationType,
         this.preExchangeAmount, this.preExchangeCurrencyType,
         this.postExchangeAmount, this.postExchangeCurrencyType,
         this.dateAndTimeOfExchange

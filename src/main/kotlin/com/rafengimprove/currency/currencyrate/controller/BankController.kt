@@ -1,7 +1,6 @@
 package com.rafengimprove.currency.currencyrate.controller
 
 import com.rafengimprove.currency.currencyrate.model.dto.BankDto
-import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.service.BankService
 import org.slf4j.LoggerFactory

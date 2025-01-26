@@ -1,5 +1,5 @@
 package com.rafengimprove.currency.currencyrate.model.type
 
-enum class CurrencyDirectionType {
+enum class OperationType {
     BUY, SELL
 }
