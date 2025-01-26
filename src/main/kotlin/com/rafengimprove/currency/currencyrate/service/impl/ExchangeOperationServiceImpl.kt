@@ -1,5 +1,6 @@
 package com.rafengimprove.currency.currencyrate.service.impl
 
+import com.rafengimprove.currency.currencyrate.model.dto.ClientDto
 import com.rafengimprove.currency.currencyrate.model.dto.ClientStatsDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
@@ -20,16 +21,13 @@ class ExchangeOperationServiceImpl(
     override fun save(exchangeOperationDto: ExchangeOperationDto): ExchangeOperationDto {
         val exchangeOperation = exchangeOperationRepository.save(exchangeOperationDto.toEntity()).toDto()
 
-        getClientIdCurrencyTypeDirectionAndAmountFromExchangeOperation(
-            clientStatsServiceImpl, exchangeOperation
-        )
+        modifyClientStats(exchangeOperation)
 
         return exchangeOperation
     }
 }
 
-fun getClientIdCurrencyTypeDirectionAndAmountFromExchangeOperation(
-    clientStatsServiceImpl: ClientStatsServiceImpl,
+fun modifyClientStats(
     exchangeOperation: ExchangeOperationDto,
 ) {
     val id = exchangeOperation.clientDto?.id
@@ -37,48 +35,57 @@ fun getClientIdCurrencyTypeDirectionAndAmountFromExchangeOperation(
     lateinit var currencyDirectionType: CurrencyDirectionType
     var amount: Double = 0.0
 
-    if (exchangeOperation.currencyDirectionType == SELL) {
-        currencyDirectionType = SELL
-        currencyType = exchangeOperation.preExchangeCurrencyType
-        amount = exchangeOperation.preExchangeAmount
-    } else {
-        currencyDirectionType = BUY
-        currencyType = exchangeOperation.postExchangeCurrencyType
-        amount = exchangeOperation.postExchangeAmount
-    }
+    when (exchangeOperation.currencyDirectionType) {
+        SELL -> {
+            currencyDirectionType = SELL
+            currencyType = exchangeOperation.preExchangeCurrencyType
+            amount = exchangeOperation.preExchangeAmount
+        }
 
+        BUY -> {
+            currencyDirectionType = BUY
+            currencyType = exchangeOperation.postExchangeCurrencyType
+            amount = exchangeOperation.postExchangeAmount
+        }
+    }
     updateAmountInClientStats(
-        clientStatsServiceImpl, exchangeOperation,
+        exchangeOperation,
         id!!, currencyType, currencyDirectionType,
         amount
     )
 }
 
 fun updateAmountInClientStats(
-    clientStatsServiceImpl: ClientStatsServiceImpl,
     exchangeOperation: ExchangeOperationDto,
-    id: Long, currencyType: CurrencyType,
+    clientId: Long, currencyType: CurrencyType,
     currencyDirectionType: CurrencyDirectionType, amount: Double
 ) {
     val clientStats =
         clientStatsServiceImpl
-            .getClientStatsByClientIdCurrencyTypeAndDirection(
-                id, currencyType, currencyDirectionType
+            .getClientStatsBy(
+                clientId, currencyType, currencyDirectionType
             )
-
-    if (clientStats != null) {
-        clientStatsServiceImpl.editByClientIdCurrencyTypeAndDirection(
-            id, currencyType, currencyDirectionType, amount
-        )
-    } else {
-        val clientStats = ClientStatsDto(
-            currencyType = currencyType,
-            currencyDirectionType = currencyDirectionType,
-            total = amount
-        )
-
-        clientStats.clientDto = exchangeOperation.clientDto
-
+    
         clientStatsServiceImpl.save(clientStats)
-    }
+}
+
+class ClientStatsUpdater(
+    private val currencyType: CurrencyType,
+    private val currencyDirectionType: CurrencyDirectionType,
+    private val clientDto: ClientDto,
+    private val amount: Double
+) {
+   fun update(clientStatsLoader: () -> ClientStatsDto?): ClientStatsDto {
+       val clientStatsDto = clientStatsLoader()
+       return if (clientStatsDto != null) {
+           clientStatsDto.total = clientStatsDto.total?.plus(amount)
+           clientStatsDto
+       } else {
+           ClientStatsDto(
+               currencyType = currencyType,
+               currencyDirectionType = currencyDirectionType,
+               total = amount
+           ).apply { this.clientDto = clientDto }
+       }
+   } 
 }
