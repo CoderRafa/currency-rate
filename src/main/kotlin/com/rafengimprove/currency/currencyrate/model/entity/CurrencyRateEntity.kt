@@ -16,17 +16,20 @@ open class CurrencyRateEntity {
     open var id: Long? = null
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    open lateinit var type: CurrencyType
+    @Column(name = "from_currency_type", nullable = false)
+    open lateinit var fromCurrencyType: CurrencyType
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "to_currency_type")
+    open lateinit var toCurrencyType: CurrencyType
 
     @Column(name = "buy_rate")
-    open var buyRate: Double? = null
-
+    open var buyRate: Double = 0.0
 
     @Column(name = "sell_rate")
-    open var sellRate: Double? = null
+    open var sellRate: Double = 0.0
 
-    @ManyToOne(cascade = [CascadeType.REFRESH])
+    @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "office_entity_id")
     open var officeEntity: OfficeEntity? = null
 
@@ -53,7 +56,7 @@ fun CurrencyRateEntity.toDto(
     office: OfficeDto? = null,
     doINeedCurrencies: Boolean = false,
     doINeedOffice: Boolean = false): CurrencyRateDto {
-    val currencyRateDto = CurrencyRateDto(this.id, this.type, this.buyRate, this.sellRate)
+    val currencyRateDto = CurrencyRateDto(this.id, this.fromCurrencyType, this.toCurrencyType, this.buyRate, this.sellRate)
     if (doINeedOffice) {
         currencyRateDto.officeDto = office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies, doINeedBank = true)
     }

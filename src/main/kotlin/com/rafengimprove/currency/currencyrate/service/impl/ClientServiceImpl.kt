@@ -16,14 +16,21 @@ import org.springframework.stereotype.Service
 @Service
 class ClientServiceImpl(
     val clientRepository: ClientRepository,
-    val clientStatsServiceImpl: ClientStatsService
-): ClientService, ClientStatsService by clientStatsServiceImpl  {
+//    val clientStatsServiceImpl: ClientStatsService
+): ClientService//, ClientStatsService by clientStatsServiceImpl
+{
 
     private val log = LoggerFactory.getLogger(ClientServiceImpl::class.java)
+
     override fun save(clientDto: ClientDto): ClientDto {
         log.debug("Save a new client with name {}", clientDto.firstName)
         return clientRepository.save(clientDto.toEntity()).toDto()
     }
+
+    override fun findById(id: Long): ClientDto {
+        return clientRepository.findById(id).orElseThrow().toDto()
+    }
+
 
     override fun getClientsAndCombinedSoldCurrencyAmount(type: CurrencyType): List<ClientWithTotalCurrencyDto> {
         log.debug("Get clients with combined currency amount they have sold")
@@ -33,5 +40,11 @@ class ClientServiceImpl(
             clientList.add(ClientWithTotalCurrencyDto(element.firstName, 100.0))
         }
         return clientList
+    }
+
+    override fun deleteClientById(id: Long) {
+        if (clientRepository.findById(id) != null) {
+            return clientRepository.deleteById(id)
+        }
     }
 }

@@ -11,12 +11,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface OfficeRepository: JpaRepository<OfficeEntity, Long> {
 
-    fun existsByAddressIgnoreCase(address: String): Boolean
-
-
-    fun findByAddressIgnoreCase(address: String): OfficeEntity
-
-
     fun existsByAddressIgnoreCaseAndBankEntity_Id(address: String, id: Long): Boolean
 
 
@@ -26,21 +20,24 @@ interface OfficeRepository: JpaRepository<OfficeEntity, Long> {
     fun findByBankEntity_Id(id: Long): List<OfficeEntity>
 
 
-    fun findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_BuyRateDesc(
-        type: CurrencyType,
+    fun findByCurrencyRateEntities_ToCurrencyTypeOrderByCurrencyRateEntities_BuyRateDesc(
+        toCurrencyType: CurrencyType,
         pageable: Pageable
     ): Page<OfficeEntity>
 
 
-    fun findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_SellRateAsc(
-        type: CurrencyType,
+    fun findByCurrencyRateEntities_ToCurrencyTypeOrderByCurrencyRateEntities_SellRateAsc(
+        toCurrencyType: CurrencyType,
         pageable: Pageable
     ): Page<OfficeEntity>
 
-    @Query("""
-        select o from OfficeEntity o 
+
+    @Query(
+        """
+        select o from OfficeEntity o
         join fetch o.currencyRateEntities cr
-        where cr.type = :type
-    """)
+        where cr.fromCurrencyType = :type or cr.toCurrencyType = :type 
+    """
+    )
     fun findOfficesWorkingWithType(type: CurrencyType, pageable: Pageable): Page<OfficeEntity>
 }

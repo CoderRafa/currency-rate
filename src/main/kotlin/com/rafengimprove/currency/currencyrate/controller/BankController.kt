@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -47,16 +48,21 @@ class BankController(val bankService: BankService) {
         return bankService.getAllByCurrency(currencyType, pageable)
     }
 
-    @GetMapping("/no-currency")
-    fun getBanksThatDoNotWorkWithCurrency(
-        @RequestParam currencyType: CurrencyType,
-        @PageableDefault(size = 10, page = 0) pageable: Pageable
-    ): Page<BankDto> {
-        return bankService.getAllBanksThanDoNotWorkWithCurrency(currencyType, pageable)
-    }
+//    @GetMapping("/no-currency")
+//    fun getBanksThatDoNotWorkWithCurrency(
+//        @RequestParam currencyType: CurrencyType,
+//        @PageableDefault(size = 10, page = 0) pageable: Pageable
+//    ): Page<BankDto> {
+//        return bankService.getAllBanksThatDoNotWorkWithCurrency(currencyType, pageable)
+//    }
 
     @PutMapping("/{name}")
     fun editBankByName(@PathVariable("name") name: String, @RequestBody bankDto: BankDto): BankDto? {
         return bankService.editByName(name, bankDto)
+    }
+
+    @DeleteMapping("/{name}")
+    fun deleteBankByName(@PathVariable("name") name: String) {
+        return bankService.deleteBankByName(name)
     }
 }

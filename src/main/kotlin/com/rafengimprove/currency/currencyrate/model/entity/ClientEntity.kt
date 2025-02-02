@@ -5,7 +5,7 @@ import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "client")
+@Table(name = "clent")
 open class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
@@ -25,10 +25,10 @@ open class ClientEntity {
     @Column(name = "email")
     open var email: String? = null
 
-    @OneToMany(mappedBy = "clientEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "clientEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     open var exchangeOperationEntities: MutableSet<ExchangeOperationEntity> = mutableSetOf()
 
-    @OneToMany(mappedBy = "clientEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "clientEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     open var clientStatsEntities: MutableSet<ClientStatsEntity> = mutableSetOf()
 }
 

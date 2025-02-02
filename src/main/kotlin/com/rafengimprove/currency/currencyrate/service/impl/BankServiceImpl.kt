@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service
 class BankServiceImpl(val bankRepository: BankRepository) : BankService {
 
     private val log = LoggerFactory.getLogger(BankServiceImpl::class.java)
+
     override fun save(bank: BankDto): BankDto {
         log.debug("Save a new bank with name {}", bank.name)
         return if (bankRepository.existsByNameIgnoreCase(bank.name)) {
@@ -57,9 +58,15 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
             .map { it.toDto() }
     }
 
-    override fun getAllBanksThanDoNotWorkWithCurrency(currencyType: CurrencyType, pageable: Pageable): Page<BankDto> {
-        return bankRepository.findBanksNotWorkingWithCurrency(currencyType, pageable).map { it.toDto() }
+    override fun deleteBankByName(name: String) {
+        val bankToDelete = getByName(name)
+        if (bankToDelete != null) {
+            bankRepository.delete(bankToDelete.toEntity())
+        }
     }
+//    override fun getAllBanksThatDoNotWorkWithCurrency(currencyType: CurrencyType, pageable: Pageable): Page<BankDto> {
+//        return bankRepository.findBanksNotWorkingWithCurrency(currencyType, pageable).map { it.toDto() }
+//    }
 }
 
 

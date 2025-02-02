@@ -8,14 +8,17 @@ import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType.BUY
 import com.rafengimprove.currency.currencyrate.model.type.OperationType.SELL
 import com.rafengimprove.currency.currencyrate.repository.ClientStatsRepository
+import com.rafengimprove.currency.currencyrate.service.ClientService
 import com.rafengimprove.currency.currencyrate.service.ClientStatsService
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class ClientStatsServiceImpl(
-    val clientStatsRepository: ClientStatsRepository
+    val clientStatsRepository: ClientStatsRepository,
+    val clientService: ClientService
 ) : ClientStatsService {
+
     override fun save(clientStatsDto: ClientStatsDto): ClientStatsDto {
         return clientStatsRepository.save(clientStatsDto.toEntity()).toDto()
     }
@@ -25,7 +28,7 @@ class ClientStatsServiceImpl(
         currencyType: CurrencyType,
         operationType: OperationType,
     ): Optional<ClientStatsEntity> {
-        return clientStatsRepository.findByCurrencyTypeAndCurrencyDirectionTypeAndClientEntity_Id(
+        return clientStatsRepository.findByCurrencyTypeAndOperationTypeAndClientEntity_Id(
             currencyType,
             operationType,
             clientId,
@@ -38,8 +41,8 @@ class ClientStatsServiceImpl(
         operationType: OperationType,
         converter: (ClientStatsEntity) -> ClientStatsDto?
     ): ClientStatsDto? {
-        return clientStatsRepository.findByCurrencyTypeAndCurrencyDirectionTypeAndClientEntity_Id(
-                currencyType,
+        return clientStatsRepository.findByCurrencyTypeAndOperationTypeAndClientEntity_Id(
+            currencyType,
             operationType,
             clientId
         ).takeIf { it.isPresent }?.let { converter(it.get()) }
@@ -51,7 +54,8 @@ class ClientStatsServiceImpl(
         amount: Double,
         modifier: (ClientStatsEntity) -> ClientStatsEntity
     ): ClientStatsDto? {
-        return run { modifier(clientStatsEntity) }.let { clientStatsRepository.save(it) }.toDto()   //clientStatsRepository.save(modifier(clientStatsEntity)).toDto()
+        return run { modifier(clientStatsEntity) }.let { clientStatsRepository.save(it) }
+            .toDto()   //clientStatsRepository.save(modifier(clientStatsEntity)).toDto()
     }
 
     // Rates
@@ -71,35 +75,27 @@ class ClientStatsServiceImpl(
     //      BUY:                RUB             ->      USD                  100234             100     client_id
     //      BUY:                USD             ->      EUR                  1003456            97      client_id
 
+
     override fun modifyClientStats(
         exchangeOperation: ExchangeDataDto,
     ) {
 
-        ClientStatsUpdater(
-            exchangeOperation.clientDto!!,
-            exchangeOperation.operationType,
-            exchangeOperation.giveCurrencyType,
-            exchangeOperation.giveAmount,
-            exchangeOperation.receiveCurrencyType,
-            exchangeOperation.receiveAmount
-        )
-
         when (exchangeOperation.operationType) {
             SELL -> {
                 ClientStatsUpdater(
-                    exchangeOperation.clientDto!!,
-                    exchangeOperation.preExchangeCurrencyType,
+                    clientService.findById(exchangeOperation.clientId),
+                    exchangeOperation.toCurrencyType,
                     exchangeOperation.operationType,
-                    exchangeOperation.amount
+                    exchangeOperation.giveAmount
                 )
             }
 
             BUY -> {
                 ClientStatsUpdater(
-                    exchangeOperation.clientDto!!,
-                    exchangeOperation.postExchangeCurrencyType,
+                    clientService.findById(exchangeOperation.clientId),
+                    exchangeOperation.toCurrencyType,
                     exchangeOperation.operationType,
-                    exchangeOperation.postExchangeAmount
+                    exchangeOperation.receiveAmount
                 )
             }
         }.update {
@@ -120,7 +116,7 @@ class ClientStatsUpdater(
 ) {
     fun update(clientStatsLoader: (ClientStatsUpdater) -> Optional<ClientStatsEntity>): ClientStatsEntity {
         return clientStatsLoader(this)
-            .map { it.total = it.total?.plus(amount); it }
+            .map { it.total = it.total.plus(amount); it }
             .orElse(
                 ClientStatsEntity(
                     currencyType = currencyType,

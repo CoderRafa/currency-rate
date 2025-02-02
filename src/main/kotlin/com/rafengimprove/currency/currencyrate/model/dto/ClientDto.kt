@@ -22,5 +22,5 @@ fun ClientDto.toEntity(exchangeOperations: MutableSet<ExchangeOperationEntity>? 
     this.lastName = this@toEntity.lastName
     this.passportNumber = this@toEntity.passportNumber
     this.email = this@toEntity.email
-    this.exchangeOperationEntities = exchangeOperations ?: this@toEntity.exchangeOperations.map { it.toEntity(clientEntity = this) }.toMutableSet()
+//    this.exchangeOperationEntities = exchangeOperations ?: this@toEntity.exchangeOperations.map { it.toEntity(clientEntity = this) }.toMutableSet()
 }

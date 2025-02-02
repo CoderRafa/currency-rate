@@ -19,33 +19,33 @@ open class ExchangeOperationEntity() {
     open var id: Long? = null
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "currency_direction_type")
-    lateinit var operationType: OperationType
+    @Column(name = "operation_type")
+    open lateinit var operationType: OperationType
 
     @Column(name = "pre_exchange_amount")
-    open var preExchangeAmount: Double = 0.0
+    open var giveAmount: Double = 0.0
 
     @Enumerated(EnumType.STRING)
     @Column(name = "pre_exchange_currency_type")
-    lateinit var preExchangeCurrencyType: CurrencyType
+    open lateinit var fromCurrencyType: CurrencyType
 
     @Column(name = "post_exchange_amount")
-    open var postExchangeAmount: Double = 0.0
+    open var receiveAmount: Double = 0.0
 
     @Enumerated(EnumType.STRING)
     @Column(name = "post_exchange_currency_type")
-    lateinit var postExchangeCurrencyType: CurrencyType
+    open lateinit var toCurrencyType: CurrencyType
 
     @Column(name = "date_and_time_of_exchange")
-    lateinit var dateAndTimeOfExchange: LocalDateTime
+    open lateinit var dateAndTimeOfExchange: LocalDateTime
 
-    @OneToOne(cascade = [CascadeType.REFRESH], orphanRemoval = true)
-    @JoinColumn(name = "office_entity_id")
-    lateinit var officeEntity: OfficeEntity
-
-    @ManyToOne(cascade = [CascadeType.REFRESH])
+    @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "client_entity_id")
     open var clientEntity: ClientEntity? = null
+
+    @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_entity_id")
+    open lateinit var officeEntity: OfficeEntity
 
     constructor(
         operationType: OperationType,
@@ -55,9 +55,9 @@ open class ExchangeOperationEntity() {
         dateAndTimeOfExchange: LocalDateTime
     ): this() {
         this.operationType = operationType
-        this.preExchangeAmount = preExchangeAmount
-        this.preExchangeCurrencyType = preExchangeCurrencyType
-        this.postExchangeCurrencyType = postExchangeCurrencyType
+        this.giveAmount = preExchangeAmount
+        this.fromCurrencyType = preExchangeCurrencyType
+        this.toCurrencyType = postExchangeCurrencyType
         this.dateAndTimeOfExchange = dateAndTimeOfExchange
     }
 
@@ -85,8 +85,8 @@ fun ExchangeOperationEntity.toDto(
 ): ExchangeOperationDto {
     val exchangeOperationDto = ExchangeOperationDto(
         this.id, this.operationType,
-        this.preExchangeAmount, this.preExchangeCurrencyType,
-        this.postExchangeAmount, this.postExchangeCurrencyType,
+        this.giveAmount, this.fromCurrencyType,
+        this.receiveAmount, this.toCurrencyType,
         this.dateAndTimeOfExchange
     )
 

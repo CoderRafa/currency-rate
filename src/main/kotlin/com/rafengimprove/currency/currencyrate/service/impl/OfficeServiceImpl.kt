@@ -4,10 +4,10 @@ import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.OfficeEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType.BUY
 import com.rafengimprove.currency.currencyrate.model.type.OperationType.SELL
-import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.repository.BankRepository
 import com.rafengimprove.currency.currencyrate.repository.OfficeRepository
 import com.rafengimprove.currency.currencyrate.service.OfficeService
@@ -25,11 +25,15 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
         val officesList = mutableListOf<OfficeDto>()
         for (office in offices) {
             if (officeRepository.existsByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)) {
-                officesList.add(officeRepository.findByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)
-                    .toDto(doINeedOffices = false))
+                officesList.add(
+                    officeRepository.findByAddressIgnoreCaseAndBankEntity_Id(office.address, bankId)
+                        .toDto(doINeedOffices = false)
+                )
             } else {
-                officesList.add(officeRepository.save(office.toEntity(bankRepository.findById(bankId).get()))
-                    .toDto(doINeedOffices = false, doINeedBank = true))
+                officesList.add(
+                    officeRepository.save(office.toEntity(bankRepository.findById(bankId).get()))
+                        .toDto(doINeedOffices = false, doINeedBank = true)
+                )
             }
         }
         return officesList
@@ -67,13 +71,27 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
         pageable: Pageable
     ): Page<OfficeDto> {
         log.debug("Find rates by the type: {} and direction: {}", currencyType, operationType)
-        return when(operationType) {
-            BUY       -> officeRepository.findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_SellRateAsc(currencyType, pageable)
-            SELL      -> officeRepository.findByCurrencyRateEntities_TypeOrderByCurrencyRateEntities_BuyRateDesc(currencyType, pageable)
+        return when (operationType) {
+            BUY -> officeRepository.findByCurrencyRateEntities_ToCurrencyTypeOrderByCurrencyRateEntities_SellRateAsc(
+                currencyType,
+                pageable
+            )
+
+            SELL -> officeRepository.findByCurrencyRateEntities_ToCurrencyTypeOrderByCurrencyRateEntities_BuyRateDesc(
+                currencyType,
+                pageable
+            )
         }.map(OfficeEntity::toDto)
     }
 
     override fun findOfficesWorkingWithType(type: CurrencyType, pageable: Pageable): Page<OfficeDto> {
         return officeRepository.findOfficesWorkingWithType(type, pageable).map { it.toDto(doINeedBank = false) }
+    }
+
+    override fun deleteOfficeById(id: Long) {
+        val officeToBeDeleted = getById(id)
+        if (officeToBeDeleted != null) {
+            officeRepository.deleteById(id)
+        }
     }
 }

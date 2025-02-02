@@ -24,16 +24,16 @@ open class ClientStatsEntity() {
     open var operationType: OperationType? = null
 
     @Column(name = "total")
-    open var total: Double? = null
+    open var total: Double = 0.0
 
-    @ManyToOne(cascade = [CascadeType.REFRESH])
+    @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "client_entity_id")
     open var clientEntity: ClientEntity? = null
 
     constructor(
         currencyType: CurrencyType?,
         operationType: OperationType?,
-        total: Double?
+        total: Double
     ): this() {
         this.currencyType = currencyType
         this.operationType = operationType
@@ -54,7 +54,7 @@ open class ClientStatsEntity() {
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
         result = 31 * result + (currencyType?.hashCode() ?: 0)
-        result = 31 * result + (total?.hashCode() ?: 0)
+        result = 31 * result + (total.hashCode() ?: 0)
         result = 31 * result + (clientEntity?.hashCode() ?: 0)
         return result
     }

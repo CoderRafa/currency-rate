@@ -11,7 +11,7 @@ data class ClientStatsDto(
     val id: Long? = null,
     val currencyType: CurrencyType? = null,
     val operationType: OperationType? = null,
-    var total: Double? = null
+    var total: Double = 0.0
 ) {
     var clientDto: ClientDto? = null
 }

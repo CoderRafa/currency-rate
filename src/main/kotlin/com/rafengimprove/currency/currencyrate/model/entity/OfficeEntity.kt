@@ -24,15 +24,15 @@ open class OfficeEntity {
     @Column(name = "area")
     open var area: Double = 0.0
 
-    @OneToMany(mappedBy = "officeEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "officeEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     open var currencyRateEntities: MutableSet<CurrencyRateEntity> = mutableSetOf()
 
-    @ManyToOne(cascade = [CascadeType.REFRESH])
+    @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_entity_id")
     open var bankEntity: BankEntity? = null
 
-    @OneToOne(mappedBy = "officeEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
-    open var exchangeOperationEntity: ExchangeOperationEntity? = null
+    @OneToMany(mappedBy = "officeEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    open var exchangeOperationEntities: MutableSet<ExchangeOperationEntity> = mutableSetOf()
 
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true

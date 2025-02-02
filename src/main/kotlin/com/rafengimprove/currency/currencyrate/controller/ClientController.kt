@@ -30,4 +30,11 @@ class ClientController(val clientService: ClientService) {
         log.debug("Get clients and the combined amount of currency {} the sold", type)
         return clientService.getClientsAndCombinedSoldCurrencyAmount(type)
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteClientById(
+        @PathVariable("id") id: Long
+    ) {
+        return clientService.deleteClientById(id)
+    }
 }

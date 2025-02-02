@@ -15,4 +15,5 @@ interface OfficeService {
     fun getAllByBank(bankId: Long): List<OfficeDto>
     fun findOfficesBy(currencyType: CurrencyType, operationType: OperationType, pageable: Pageable): Page<OfficeDto>
     fun findOfficesWorkingWithType(type: CurrencyType, pageable: Pageable): Page<OfficeDto>
+    fun deleteOfficeById(id: Long)
 }

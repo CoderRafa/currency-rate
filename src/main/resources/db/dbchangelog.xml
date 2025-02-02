@@ -8,4 +8,5 @@
     <include file="db/migration/V1/V1-2-change-rate-to-sell-rate-and-buy-rate.yaml"/>
     <include file="/db/migration/V1/V1-3-create-client-and-exchange-operation-tables.yaml"/>
     <include file="db/migration/V1/V1-4-add-currency-direction-column-to-client-stats-table.yaml"/>
+    <include file="db/migration/V1/V1-5-delete-currency-rate-add-from-currency-rate-type-and-to-currency-rate-type-change-currency-direction-type-to-operation-type-in-currency-rate-table.yaml"/>
 </databaseChangeLog>

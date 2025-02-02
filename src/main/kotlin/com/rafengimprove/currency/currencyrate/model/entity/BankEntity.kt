@@ -19,7 +19,7 @@ open class BankEntity {
     @Column(name = "description")
     open var description: String? = null
 
-    @OneToMany(mappedBy = "bankEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "bankEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     open var officeEntities: MutableSet<OfficeEntity> = mutableSetOf()
 }
 

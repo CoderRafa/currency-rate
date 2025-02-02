@@ -9,7 +9,7 @@ import java.util.*
 interface ClientStatsRepository : JpaRepository<ClientStatsEntity, Long> {
 
 
-    fun findByCurrencyTypeAndCurrencyDirectionTypeAndClientEntity_Id(
+    fun findByCurrencyTypeAndOperationTypeAndClientEntity_Id(
         currencyType: CurrencyType,
         operationType: OperationType,
         id: Long

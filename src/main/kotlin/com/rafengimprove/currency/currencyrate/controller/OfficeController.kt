@@ -57,4 +57,9 @@ class OfficeController(val officeService: OfficeService) {
 
         return officeService.findOfficesWorkingWithType(currencyType, pageable)
     }
+
+    @DeleteMapping("/office/{id}")
+    fun deleteOfficeById(@PathVariable("id") id: Long) {
+        officeService.deleteOfficeById(id)
+    }
 }

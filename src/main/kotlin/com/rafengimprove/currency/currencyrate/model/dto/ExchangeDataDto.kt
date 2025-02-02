@@ -8,17 +8,18 @@ import java.time.LocalDateTime
 data class ExchangeDataDto(
     val officeId: Long,
     val clientId: Long,
-    val amount: Double,
+    val giveAmount: Double,
     val operationType: OperationType,
-    val preExchangeCurrencyType: CurrencyType = CurrencyType.USD,
-    val postExchangeCurrencyType: CurrencyType = CurrencyType.RUB,
-    var postExchangeAmount: Double = 0.0,
+    val fromCurrencyType: CurrencyType = CurrencyType.USD,
+    val toCurrencyType: CurrencyType = CurrencyType.RUB,
+    var receiveAmount: Double = 0.0,
+    val dateTime: LocalDateTime = LocalDateTime.now()
 )
 
 fun ExchangeDataDto.toEntity() = ExchangeOperationEntity(
     operationType,
-    amount,
-    preExchangeCurrencyType,
-    postExchangeCurrencyType,
-    LocalDateTime.now()
+    giveAmount,
+    fromCurrencyType,
+    toCurrencyType,
+    dateTime
 )

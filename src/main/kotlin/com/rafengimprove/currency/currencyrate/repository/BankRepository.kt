@@ -22,10 +22,22 @@ interface BankRepository : JpaRepository<BankEntity, Long> {
         select b from BankEntity b
         join fetch b.officeEntities o
         join fetch o.currencyRateEntities cr
-        where cr.type = :type
+        where cr.fromCurrencyType = :type or cr.toCurrencyType = :type
     """
     )
     fun findBanksWorkingWithType(type: CurrencyType, pageable: Pageable): Page<BankEntity>
+
+
+    // TO DO
+//    @Query(
+//        """
+//        select b from BankEntity b
+//        join b.officeEntities o
+//        join o.currencyRateEntities cr
+//        having cr.fromCurrencyType != :type and cr.toCurrencyType != :type
+//    """
+//    )
+//    fun findBanksNotWorkingWithCurrency(type: CurrencyType, pageable: Pageable): Page<BankEntity>
 
     //    @Query("""
 //        select b from BankEntity b
@@ -39,14 +51,4 @@ interface BankRepository : JpaRepository<BankEntity, Long> {
 //        )
 //    """)
 //    fun findBanksNotWorkingWithCurrency(type: CurrencyType, pageable: Pageable): Page<BankEntity>
-    @Query(
-        """
-        select b from BankEntity b
-        join b.officeEntities o
-        join o.currencyRateEntities cr
-        where cr.type != :type
-    """
-    )
-    fun findBanksNotWorkingWithCurrency(type: CurrencyType, pageable: Pageable): Page<BankEntity>
-
 }

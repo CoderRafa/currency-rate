@@ -8,5 +8,10 @@ import org.springframework.data.domain.Pageable
 
 interface ClientService {
     fun save(clientDto: ClientDto): ClientDto
+
+    fun findById(id: Long): ClientDto
+
     fun getClientsAndCombinedSoldCurrencyAmount(type: CurrencyType): List<ClientWithTotalCurrencyDto>
+
+    fun deleteClientById(id: Long)
 }
