@@ -5,7 +5,7 @@ import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "clent")
+@Table(name = "client")
 open class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")

@@ -45,5 +45,5 @@ databaseChangeLog:
             baseTableName: client_stats_entity
             constraintName: FK_CLIENTSTATSENTITY_ON_CLIENT_ENTITY
             referencedColumnNames: id
-            referencedTableName: clent
+            referencedTableName: client
 

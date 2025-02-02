@@ -43,7 +43,7 @@ databaseChangeLog:
               - column:
                   name: email
                   type: VARCHAR(255)
-            tableName: clent
+            tableName: client
   - changeSet:
       id: 1737033986184-4
       author: Rafa (generated)
@@ -93,7 +93,7 @@ databaseChangeLog:
             baseTableName: exchange_operation
             constraintName: FK_EXCHANGE_OPERATION_ON_CLIENT_ENTITY
             referencedColumnNames: id
-            referencedTableName: clent
+            referencedTableName: client
   - changeSet:
       id: 1737033986184-6
       author: Rafa (generated)

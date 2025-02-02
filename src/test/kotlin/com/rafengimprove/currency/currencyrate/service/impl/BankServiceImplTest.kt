@@ -2,6 +2,7 @@ package com.rafengimprove.currency.currencyrate.service.impl
 
 import com.rafengimprove.currency.currencyrate.model.dto.BankDto
 import com.rafengimprove.currency.currencyrate.service.BankService
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Test
@@ -23,10 +24,10 @@ class BankServiceImplTest @Autowired constructor(val bankService: BankService) {
 
     @Test
     fun `Happy pass - save a new bank`() {
-        val newBank = bankService.save(BankDto(1, "Rafa", "Very successful bank" ))
+        val newBank = bankService.save(BankDto(null, "Rafa", "Very successful bank" ))
 
         assertEquals("Rafa", newBank.name)
-        assertEquals(1, newBank.id)
+        Assertions.assertThat(newBank).hasNoNullFieldsOrProperties()
     }
 
     @Test
