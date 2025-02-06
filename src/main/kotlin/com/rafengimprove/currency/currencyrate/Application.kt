@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class CurrencyRateApplication
+class Application
 
 fun main(args: Array<String>) {
-    runApplication<CurrencyRateApplication>(*args)
+    runApplication<Application>(*args)
 }

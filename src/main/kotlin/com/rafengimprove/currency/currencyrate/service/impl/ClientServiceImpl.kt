@@ -43,8 +43,6 @@ class ClientServiceImpl(
     }
 
     override fun deleteClientById(id: Long) {
-        if (clientRepository.findById(id) != null) {
-            return clientRepository.deleteById(id)
-        }
+        clientRepository.deleteById(id)
     }
 }

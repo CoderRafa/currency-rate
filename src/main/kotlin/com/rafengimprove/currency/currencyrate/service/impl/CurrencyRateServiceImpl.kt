@@ -7,7 +7,7 @@ import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
 import com.rafengimprove.currency.currencyrate.service.CurrencyRateService
 import com.rafengimprove.currency.currencyrate.service.OfficeService
-import com.rafengimprove.currency.exception.ElementDoesNotExist
+import com.rafengimprove.currency.currencyrate.exception.ElementDoesNotExist
 import jakarta.persistence.EntityManager
 import org.hibernate.SessionFactory
 import org.slf4j.LoggerFactory

@@ -91,9 +91,7 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
 
 
     override fun deleteOfficeById(id: Long) {
-        val officeToBeDeleted = getById(id)
-        if (officeToBeDeleted != null) {
-            officeRepository.deleteById(id)
-        }
+//        officeRepository.findById(id).ifPresent { officeRepository.delete(it) }
+        officeRepository.deleteById(id)
     }
 }
