@@ -25,11 +25,13 @@ class ClientStatsServiceImpl(
 
     private fun getClientStatsBy(
         clientId: Long,
-        currencyType: CurrencyType,
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
         operationType: OperationType,
     ): Optional<ClientStatsEntity> {
-        return clientStatsRepository.findByCurrencyTypeAndOperationTypeAndClientEntity_Id(
-            currencyType,
+        return clientStatsRepository.findByFromCurrencyTypeAndToCurrencyTypeAndOperationTypeAndClientEntity_Id(
+            fromCurrencyType,
+            toCurrencyType,
             operationType,
             clientId,
         )
@@ -37,12 +39,14 @@ class ClientStatsServiceImpl(
 
     override fun getClientStatsBy(
         clientId: Long,
-        currencyType: CurrencyType,
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
         operationType: OperationType,
         converter: (ClientStatsEntity) -> ClientStatsDto?
     ): ClientStatsDto? {
-        return clientStatsRepository.findByCurrencyTypeAndOperationTypeAndClientEntity_Id(
-            currencyType,
+        return clientStatsRepository.findByFromCurrencyTypeAndToCurrencyTypeAndOperationTypeAndClientEntity_Id(
+            fromCurrencyType,
+            toCurrencyType,
             operationType,
             clientId
         ).takeIf { it.isPresent }?.let { converter(it.get()) }
@@ -58,24 +62,6 @@ class ClientStatsServiceImpl(
             .toDto()   //clientStatsRepository.save(modifier(clientStatsEntity)).toDto()
     }
 
-    // Rates
-    // operation_type           give                   receive             giveAmount   receiveAmount
-    //      SEL:                USD             ->      RUB                  1                100
-    //      BUY:                RUB             ->      USD                  100              1
-    //      BUY:                USD             ->      EUR                  1                0.9
-    //      SEL:                EUR             ->      USD                  1                1.1
-
-    // exchange_operations
-    // operation_type           give                   receive             giveAmount   receiveAmount
-    //      SEL:                USD             ->      RUB                  100                10000
-    //      BUY:                RUB             ->      USD                  10000              100
-
-    // client_stat_info
-    //      BUY:                RUB             ->      USD                  100000000          100     client_id
-    //      BUY:                RUB             ->      USD                  100234             100     client_id
-    //      BUY:                USD             ->      EUR                  1003456            97      client_id
-
-
     override fun modifyClientStats(
         exchangeOperation: ExchangeDataDto,
     ) {
@@ -84,6 +70,7 @@ class ClientStatsServiceImpl(
             SELL -> {
                 ClientStatsUpdater(
                     clientService.findById(exchangeOperation.clientId),
+                    exchangeOperation.fromCurrencyType,
                     exchangeOperation.toCurrencyType,
                     exchangeOperation.operationType,
                     exchangeOperation.giveAmount
@@ -93,6 +80,7 @@ class ClientStatsServiceImpl(
             BUY -> {
                 ClientStatsUpdater(
                     clientService.findById(exchangeOperation.clientId),
+                    exchangeOperation.fromCurrencyType,
                     exchangeOperation.toCurrencyType,
                     exchangeOperation.operationType,
                     exchangeOperation.receiveAmount
@@ -101,7 +89,8 @@ class ClientStatsServiceImpl(
         }.update {
             getClientStatsBy(
                 it.oldClientDto.id!!,
-                it.currencyType,
+                it.fromCurrencyType,
+                it.toCurrencyType,
                 it.operationType
             )
         }.let { clientStatsRepository.save(it) }
@@ -110,7 +99,8 @@ class ClientStatsServiceImpl(
 
 class ClientStatsUpdater(
     val oldClientDto: ClientDto,
-    val currencyType: CurrencyType,
+    val fromCurrencyType: CurrencyType,
+    val toCurrencyType: CurrencyType,
     val operationType: OperationType,
     private val amount: Double
 ) {
@@ -119,7 +109,8 @@ class ClientStatsUpdater(
             .map { it.total = it.total.plus(amount); it }
             .orElse(
                 ClientStatsEntity(
-                    currencyType = currencyType,
+                    fromCurrencyType = fromCurrencyType,
+                    toCurrencyType = toCurrencyType,
                     operationType = operationType,
                     total = amount
                 ).apply { this.clientEntity = oldClientDto.toEntity() })

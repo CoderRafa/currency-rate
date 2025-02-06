@@ -13,7 +13,7 @@ open class ClientEntity {
     @Column(name = "id", nullable = false)
     open var id: Long? = null
 
-    @Column(name = "firs_name")
+    @Column(name = "first_name")
     open var firstName: String? = null
 
     @Column(name = "last_name")
@@ -36,11 +36,16 @@ fun ClientEntity.toDto(
     exchangeOperations: MutableSet<ExchangeOperationDto>? = null,
     doINeedExchangeOperations: Boolean = true
 ): ClientDto {
-   val clientDto = ClientDto(this.id, this.firstName, this.lastName, this.passportNumber, this.email)
+    val clientDto = ClientDto(this.id, this.firstName, this.lastName, this.passportNumber, this.email)
 
     if (doINeedExchangeOperations) {
         val exchangeOperationDtos =
-            exchangeOperations ?: this.exchangeOperationEntities.map { it.toDto(client = clientDto, doINeedClient = false) }
+            exchangeOperations ?: this.exchangeOperationEntities.map {
+                it.toDto(
+                    client = clientDto,
+                    doINeedClient = false
+                )
+            }
                 .takeIf { this.exchangeOperationEntities.isNotEmpty() } ?: emptySet()
 
         clientDto.exchangeOperations.addAll(exchangeOperationDtos)

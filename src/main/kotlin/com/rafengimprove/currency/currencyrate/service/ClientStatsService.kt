@@ -12,7 +12,8 @@ interface ClientStatsService {
 
     fun getClientStatsBy(
         clientId: Long,
-        currencyType: CurrencyType,
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
         operationType: OperationType,
         converter: (ClientStatsEntity) -> ClientStatsDto? = { it.toDto() }
     ): ClientStatsDto?

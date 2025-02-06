@@ -3,10 +3,5 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
                    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <include file="db/migration/V1/V1__initial-changelog.yaml"/>
-    <include file="db/migration/V1/V1_1_add_bank-entity_and_office-entity.yaml"/>
-    <include file="db/migration/V1/V1-2-change-rate-to-sell-rate-and-buy-rate.yaml"/>
-    <include file="/db/migration/V1/V1-3-create-client-and-exchange-operation-tables.yaml"/>
-    <include file="db/migration/V1/V1-4-add-currency-direction-column-to-client-stats-table.yaml"/>
-    <include file="db/migration/V1/V1-5-delete-currency-rate-add-from-currency-rate-type-and-to-currency-rate-type-change-currency-direction-type-to-operation-type-in-currency-rate-table.yaml"/>
+    <include file="db/migration/V1/04-01-changelog.yaml"/>
 </databaseChangeLog>

@@ -8,43 +8,84 @@ import com.rafengimprove.currency.currencyrate.service.BankService
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
-@WebMvcTest(BankController ::class)
+@ActiveProfiles("h2")
+@SpringBootTest
+@AutoConfigureMockMvc
 class BankControllerTest @Autowired constructor(private val mockMvc: MockMvc) {
-
-    @MockkBean
-    lateinit var bankService: BankService
-
-    private val jsonMapper = ObjectMapper().registerModule(JSR310Module())
-
 
     @Test
     fun `Happy pass - create a new bank`() {
-        val newBank = BankDto(1, "Rafa", "Cool bank")
-        val bankCaptor = slot<BankDto>()
-
-        every { bankService.save(capture(bankCaptor)) } returns newBank
+        val newBank = BankDto(null, "Rafa", "Cool bank")
 
         mockMvc.post("/api/v1/bank") {
             contentType = MediaType.APPLICATION_JSON
-            content = jsonMapper.writeValueAsString(newBank)
+            content = ObjectMapper().writeValueAsString(newBank)
         }.andExpect {
             status { isOk() }
             content { contentType(MediaType.APPLICATION_JSON) }
-            jsonPath("$.id") { value(newBank.id) }
+            jsonPath("$.name") { value(newBank.name) }
         }
 
-        verify(exactly = 1) { bankService.save(any()) }
+        mockMvc.get("/api/v1/bank") {
+            contentType = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.size()", Matchers.`is`(1))
+        }
     }
 
+
+    @Test
+    fun `Happy pass - delete a bank`() {
+        val newBank = BankDto(null, "Rafa", "Cool bank")
+
+        mockMvc.post("/api/v1/bank") {
+            contentType = MediaType.APPLICATION_JSON
+            content = ObjectMapper().writeValueAsString(newBank)
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.name") { value(newBank.name) }
+        }
+
+        mockMvc.get("/api/v1/bank") {
+            contentType = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.size()", Matchers.`is`(1))
+        }
+
+        mockMvc.delete("/api/v1/bank/Rafa") {
+            contentType = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+        }
+
+        mockMvc.get("/api/v1/bank") {
+            contentType = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.size()", Matchers.`is`(0))
+        }
+    }
 
     @Test
     fun getAllBanks() {

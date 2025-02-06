@@ -7,11 +7,11 @@ import jakarta.persistence.*
 import org.hibernate.proxy.HibernateProxy
 
 @Entity
-@Table(name = "currencyRate" )
+@Table(name = "currencyRate")
 open class CurrencyRateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "currency_rate_seq")
-    @SequenceGenerator(name ="currency_rate_seq")
+    @SequenceGenerator(name = "currency_rate_seq")
     @Column(name = "id", nullable = false)
     open var id: Long? = null
 
@@ -32,33 +32,39 @@ open class CurrencyRateEntity {
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "office_entity_id")
     open var officeEntity: OfficeEntity? = null
-
-
-
-    final override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null) return false
-        val oEffectiveClass =
-            if (other is HibernateProxy) other.hibernateLazyInitializer.persistentClass else other.javaClass
-        val thisEffectiveClass =
-            if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass else this.javaClass
-        if (thisEffectiveClass != oEffectiveClass) return false
-        other as CurrencyRateEntity
+        if (other !is CurrencyRateEntity) return false
 
-        return id != null && id == other.id
+        if (id != other.id) return false
+        if (fromCurrencyType != other.fromCurrencyType) return false
+        if (toCurrencyType != other.toCurrencyType) return false
+        if (buyRate != other.buyRate) return false
+        if (sellRate != other.sellRate) return false
+        return officeEntity == other.officeEntity
     }
 
-    final override fun hashCode(): Int =
-        if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass.hashCode() else javaClass.hashCode()
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + fromCurrencyType.hashCode()
+        result = 31 * result + toCurrencyType.hashCode()
+        result = 31 * result + buyRate.hashCode()
+        result = 31 * result + sellRate.hashCode()
+        result = 31 * result + (officeEntity?.hashCode() ?: 0)
+        return result
+    }
 }
 
 fun CurrencyRateEntity.toDto(
     office: OfficeDto? = null,
     doINeedCurrencies: Boolean = false,
-    doINeedOffice: Boolean = false): CurrencyRateDto {
-    val currencyRateDto = CurrencyRateDto(this.id, this.fromCurrencyType, this.toCurrencyType, this.buyRate, this.sellRate)
+    doINeedOffice: Boolean = false
+): CurrencyRateDto {
+    val currencyRateDto =
+        CurrencyRateDto(this.id, this.fromCurrencyType, this.toCurrencyType, this.buyRate, this.sellRate)
     if (doINeedOffice) {
-        currencyRateDto.officeDto = office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies, doINeedBank = true)
+        currencyRateDto.officeDto =
+            office ?: this.officeEntity?.toDto(doINeedCurrencies = doINeedCurrencies, doINeedBank = true)
     }
     return currencyRateDto
 }

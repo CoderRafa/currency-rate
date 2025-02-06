@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankRepository: BankRepository) : OfficeService {
@@ -87,6 +88,7 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
     override fun findOfficesWorkingWithType(type: CurrencyType, pageable: Pageable): Page<OfficeDto> {
         return officeRepository.findOfficesWorkingWithType(type, pageable).map { it.toDto(doINeedBank = false) }
     }
+
 
     override fun deleteOfficeById(id: Long) {
         val officeToBeDeleted = getById(id)

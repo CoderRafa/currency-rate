@@ -15,12 +15,15 @@ open class ClientStatsEntity() {
     open var id: Long? = null
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "currency_type")
-    open var currencyType: CurrencyType? = null
-
+    @Column(name = "from_currency_type")
+    open var fromCurrencyType: CurrencyType? = null
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "currency_direction_type")
+    @Column(name = "to_currency_type")
+    open var toCurrencyType: CurrencyType? = null
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "operation_type")
     open var operationType: OperationType? = null
 
     @Column(name = "total")
@@ -31,29 +34,34 @@ open class ClientStatsEntity() {
     open var clientEntity: ClientEntity? = null
 
     constructor(
-        currencyType: CurrencyType?,
+        fromCurrencyType: CurrencyType?,
+        toCurrencyType: CurrencyType?,
         operationType: OperationType?,
         total: Double
-    ): this() {
-        this.currencyType = currencyType
+    ) : this() {
+        this.fromCurrencyType = fromCurrencyType
+        this.toCurrencyType = toCurrencyType
         this.operationType = operationType
         this.total = total
     }
-
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ClientStatsEntity) return false
 
         if (id != other.id) return false
-        if (currencyType != other.currencyType) return false
+        if (fromCurrencyType != other.fromCurrencyType) return false
+        if (toCurrencyType != other.toCurrencyType) return false
+        if (operationType != other.operationType) return false
         if (total != other.total) return false
         return clientEntity == other.clientEntity
     }
 
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
-        result = 31 * result + (currencyType?.hashCode() ?: 0)
+        result = 31 * result + (fromCurrencyType?.hashCode() ?: 0)
+        result = 31 * result + (toCurrencyType?.hashCode() ?: 0)
+        result = 31 * result + (operationType?.hashCode() ?: 0)
         result = 31 * result + (total.hashCode() ?: 0)
         result = 31 * result + (clientEntity?.hashCode() ?: 0)
         return result
@@ -62,7 +70,7 @@ open class ClientStatsEntity() {
 
 fun ClientStatsEntity.toDto(clientDto: ClientDto? = null, doINeedClient: Boolean = true): ClientStatsDto {
     val clientStatsDto = ClientStatsDto(
-        this.id, this.currencyType, this.operationType, this.total
+        this.id, this.fromCurrencyType, this.toCurrencyType, this.operationType, this.total
     )
 
     if (doINeedClient) {

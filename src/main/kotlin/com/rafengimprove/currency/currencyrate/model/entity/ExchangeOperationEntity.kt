@@ -22,18 +22,18 @@ open class ExchangeOperationEntity() {
     @Column(name = "operation_type")
     open lateinit var operationType: OperationType
 
-    @Column(name = "pre_exchange_amount")
+    @Column(name = "give_amount")
     open var giveAmount: Double = 0.0
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "pre_exchange_currency_type")
+    @Column(name = "from_currency_type")
     open lateinit var fromCurrencyType: CurrencyType
 
-    @Column(name = "post_exchange_amount")
+    @Column(name = "receive_amount")
     open var receiveAmount: Double = 0.0
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "post_exchange_currency_type")
+    @Column(name = "to_currency_type")
     open lateinit var toCurrencyType: CurrencyType
 
     @Column(name = "date_and_time_of_exchange")
@@ -53,7 +53,7 @@ open class ExchangeOperationEntity() {
         preExchangeCurrencyType: CurrencyType,
         postExchangeCurrencyType: CurrencyType,
         dateAndTimeOfExchange: LocalDateTime
-    ): this() {
+    ) : this() {
         this.operationType = operationType
         this.giveAmount = preExchangeAmount
         this.fromCurrencyType = preExchangeCurrencyType
@@ -61,21 +61,33 @@ open class ExchangeOperationEntity() {
         this.dateAndTimeOfExchange = dateAndTimeOfExchange
     }
 
-    final override fun equals(other: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null) return false
-        val oEffectiveClass =
-            if (other is HibernateProxy) other.hibernateLazyInitializer.persistentClass else other.javaClass
-        val thisEffectiveClass =
-            if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass else this.javaClass
-        if (thisEffectiveClass != oEffectiveClass) return false
-        other as ExchangeOperationEntity
+        if (other !is ExchangeOperationEntity) return false
 
-        return id != null && id == other.id
+        if (id != other.id) return false
+        if (operationType != other.operationType) return false
+        if (giveAmount != other.giveAmount) return false
+        if (fromCurrencyType != other.fromCurrencyType) return false
+        if (receiveAmount != other.receiveAmount) return false
+        if (toCurrencyType != other.toCurrencyType) return false
+        if (dateAndTimeOfExchange != other.dateAndTimeOfExchange) return false
+        if (clientEntity != other.clientEntity) return false
+        return officeEntity == other.officeEntity
     }
 
-    final override fun hashCode(): Int =
-        if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass.hashCode() else javaClass.hashCode()
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + operationType.hashCode()
+        result = 31 * result + giveAmount.hashCode()
+        result = 31 * result + fromCurrencyType.hashCode()
+        result = 31 * result + receiveAmount.hashCode()
+        result = 31 * result + toCurrencyType.hashCode()
+        result = 31 * result + dateAndTimeOfExchange.hashCode()
+        result = 31 * result + (clientEntity?.hashCode() ?: 0)
+        result = 31 * result + officeEntity.hashCode()
+        return result
+    }
 }
 
 fun ExchangeOperationEntity.toDto(

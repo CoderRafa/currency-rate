@@ -9,7 +9,8 @@ import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
  */
 data class ClientStatsDto(
     val id: Long? = null,
-    val currencyType: CurrencyType? = null,
+    val fromCurrencyType: CurrencyType? = null,
+    val toCurrencyType: CurrencyType? = null,
     val operationType: OperationType? = null,
     var total: Double = 0.0
 ) {
@@ -18,7 +19,8 @@ data class ClientStatsDto(
 
 fun ClientStatsDto.toEntity() = ClientStatsEntity().apply {
     this.id = this@toEntity.id
-    this.currencyType = this@toEntity.currencyType
+    this.fromCurrencyType = this@toEntity.fromCurrencyType
+    this.toCurrencyType = this@toEntity.toCurrencyType
     this.operationType = this@toEntity.operationType
     this.total = this@toEntity.total
     this.clientEntity = this@toEntity.clientDto?.toEntity()
