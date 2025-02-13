@@ -1,5 +1,6 @@
 package com.rafengimprove.currency.currencyrate.service.impl
 
+import com.rafengimprove.currency.currencyrate.exception.ElementDoesNotExist
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.OfficeEntity
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankRepository: BankRepository) : OfficeService {
@@ -58,7 +58,7 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
         return if (officeRepository.existsById(officeId)) {
             officeRepository.findById(officeId).map { it.toDto(doINeedOffices = false) }.orElseThrow()
         } else {
-            null
+            throw ElementDoesNotExist("The office does not exist")
         }
     }
 
@@ -91,7 +91,6 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
 
 
     override fun deleteOfficeById(id: Long) {
-//        officeRepository.findById(id).ifPresent { officeRepository.delete(it) }
         officeRepository.deleteById(id)
     }
 }

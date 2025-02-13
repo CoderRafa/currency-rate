@@ -22,6 +22,11 @@ class ClientController(val clientService: ClientService) {
         return clientService.save(clientDto)
     }
 
+    @GetMapping("/{id}")
+    fun getClientById(@PathVariable("id") id: Long): ClientDto {
+        return clientService.findById(id)
+    }
+
     @GetMapping("/combined/sold")
     fun getCombinedSoldCurrency(
         @RequestParam type: CurrencyType,

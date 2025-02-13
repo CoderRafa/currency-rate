@@ -61,8 +61,8 @@ class BankController(val bankService: BankService) {
         return bankService.editByName(name, bankDto)
     }
 
-    @DeleteMapping("/{name}")
-    fun deleteBankByName(@PathVariable("name") name: String) {
-        return bankService.deleteBankByName(name)
+    @DeleteMapping("/{id}")
+    fun deleteBankByName(@PathVariable("id") id: Long) {
+        return bankService.deleteById(id)
     }
 }

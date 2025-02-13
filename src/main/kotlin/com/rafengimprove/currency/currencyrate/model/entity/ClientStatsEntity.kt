@@ -63,7 +63,7 @@ open class ClientStatsEntity() {
         result = 31 * result + (toCurrencyType?.hashCode() ?: 0)
         result = 31 * result + (operationType?.hashCode() ?: 0)
         result = 31 * result + (total.hashCode() ?: 0)
-        result = 31 * result + (clientEntity?.hashCode() ?: 0)
+//        result = 31 * result + (clientEntity?.hashCode() ?: 0)
         return result
     }
 }

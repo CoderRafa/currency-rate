@@ -50,7 +50,7 @@ open class CurrencyRateEntity {
         result = 31 * result + toCurrencyType.hashCode()
         result = 31 * result + buyRate.hashCode()
         result = 31 * result + sellRate.hashCode()
-        result = 31 * result + (officeEntity?.hashCode() ?: 0)
+//        result = 31 * result + (officeEntity?.hashCode() ?: 0)
         return result
     }
 }

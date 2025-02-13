@@ -12,6 +12,6 @@ interface BankService {
     fun getByName(name: String): BankDto?
     fun getAll(): List<BankDto>
     fun getAllByCurrency(currencyType: CurrencyType, pageable: Pageable): Page<BankDto>
-    fun deleteBankByName(name: String)
+    fun deleteById(id: Long)
 //    fun getAllBanksThatDoNotWorkWithCurrency(currencyType: CurrencyType, pageable: Pageable): Page<BankDto>
 }

@@ -3,6 +3,7 @@ package com.rafengimprove.currency.currencyrate.model.dto
 import com.rafengimprove.currency.currencyrate.model.entity.ExchangeOperationEntity
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
+import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDateTime
 
 data class ExchangeDataDto(
@@ -13,7 +14,8 @@ data class ExchangeDataDto(
     val fromCurrencyType: CurrencyType = CurrencyType.USD,
     val toCurrencyType: CurrencyType = CurrencyType.RUB,
     var receiveAmount: Double = 0.0,
-    val dateTime: LocalDateTime = LocalDateTime.now()
+//    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
+    val dateTime: LocalDateTime? = LocalDateTime.now()
 )
 
 fun ExchangeDataDto.toEntity() = ExchangeOperationEntity(

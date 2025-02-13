@@ -99,14 +99,13 @@ class CurrencyRateServiceImpl(
         return if (officeToShowCurrency != null && officeToShowCurrency.currencyRates.any { it.fromCurrencyType == fromCurrencyType && it.toCurrencyType == toCurrencyType }) {
             officeService.getById(officeId)?.currencyRates?.first { it.fromCurrencyType == fromCurrencyType && it.toCurrencyType == toCurrencyType }
         } else {
-            throw ElementDoesNotExist("There is no office with that id")
+            throw ElementDoesNotExist("There is no office with that criteria")
         }
     }
 
-    override fun deleteCurrencyRateById(currencyRateId: Long) {
-        if (currencyRateRepository.findById(currencyRateId) != null) {
-            currencyRateRepository.deleteById(currencyRateId)
-        }
+    override fun deleteCurrencyRateById(id: Long) {
+
+        currencyRateRepository.deleteById(id)
     }
 
 //    override fun findBy(type: CurrencyType, pageable: Pageable): Page<CurrencyRateDto> {

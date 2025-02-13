@@ -42,8 +42,8 @@ open class OfficeEntity {
         if (address != other.address) return false
         if (description != other.description) return false
         if (area != other.area) return false
-        if (currencyRateEntities != other.currencyRateEntities) return false
-        if (bankEntity != other.bankEntity) return false
+//        if (currencyRateEntities != other.currencyRateEntities) return false
+//        if (bankEntity != other.bankEntity) return false
         return exchangeOperationEntities == other.exchangeOperationEntities
     }
 
@@ -54,7 +54,7 @@ open class OfficeEntity {
         result = 31 * result + area.hashCode()
         result = 31 * result + currencyRateEntities.hashCode()
         result = 31 * result + (bankEntity?.hashCode() ?: 0)
-        result = 31 * result + exchangeOperationEntities.hashCode()
+//        result = 31 * result + exchangeOperationEntities.hashCode()
         return result
     }
 }

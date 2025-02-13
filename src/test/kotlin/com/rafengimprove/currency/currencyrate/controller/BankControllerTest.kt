@@ -2,6 +2,7 @@ package com.rafengimprove.currency.currencyrate.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module
+import com.jayway.jsonpath.JsonPath
 import com.ninjasquad.springmockk.MockkBean
 import com.rafengimprove.currency.currencyrate.model.dto.BankDto
 import com.rafengimprove.currency.currencyrate.service.BankService
@@ -55,14 +56,14 @@ class BankControllerTest @Autowired constructor(private val mockMvc: MockMvc) {
     fun `Happy pass - delete a bank`() {
         val newBank = BankDto(null, "Rafa", "Cool bank")
 
-        mockMvc.post("/api/v1/bank") {
+        val savedBank = mockMvc.post("/api/v1/bank") {
             contentType = MediaType.APPLICATION_JSON
             content = ObjectMapper().writeValueAsString(newBank)
         }.andExpect {
             status { isOk() }
             content { contentType(MediaType.APPLICATION_JSON) }
             jsonPath("$.name") { value(newBank.name) }
-        }
+        }.andReturn().response.contentAsString
 
         mockMvc.get("/api/v1/bank") {
             contentType = MediaType.APPLICATION_JSON
@@ -72,7 +73,9 @@ class BankControllerTest @Autowired constructor(private val mockMvc: MockMvc) {
             jsonPath("$.size()", Matchers.`is`(1))
         }
 
-        mockMvc.delete("/api/v1/bank/Rafa") {
+        val id: Long  = JsonPath.read(savedBank, "$.id")
+
+        mockMvc.delete("/api/v1/bank/$id") {
             contentType = MediaType.APPLICATION_JSON
         }.andExpect {
             status { isOk() }

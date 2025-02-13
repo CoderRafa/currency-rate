@@ -33,7 +33,8 @@ class OfficeController(val officeService: OfficeService) {
     @PutMapping("/bank/{id}/office")
     fun editOfficeById(
         @PathVariable("id") id: Long,
-        @RequestBody office: OfficeDto): OfficeDto? {
+        @RequestBody office: OfficeDto
+    ): OfficeDto? {
         return officeService.editById(id, office)
     }
 

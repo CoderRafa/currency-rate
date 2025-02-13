@@ -1,5 +1,6 @@
 package com.rafengimprove.currency.currencyrate.service.impl
 
+import com.rafengimprove.currency.currencyrate.exception.ElementDoesNotExist
 import com.rafengimprove.currency.currencyrate.model.dto.ClientDto
 import com.rafengimprove.currency.currencyrate.model.dto.ClientWithTotalCurrencyDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service
 class ClientServiceImpl(
     val clientRepository: ClientRepository,
 //    val clientStatsServiceImpl: ClientStatsService
-): ClientService//, ClientStatsService by clientStatsServiceImpl
+) : ClientService//, ClientStatsService by clientStatsServiceImpl
 {
 
     private val log = LoggerFactory.getLogger(ClientServiceImpl::class.java)
@@ -28,14 +29,18 @@ class ClientServiceImpl(
     }
 
     override fun findById(id: Long): ClientDto {
-        return clientRepository.findById(id).orElseThrow().toDto()
+        if (clientRepository.findById(id).isPresent) {
+            return clientRepository.findById(id).orElseThrow().toDto()
+        } else {
+            throw ElementDoesNotExist("This client does not exist")
+        }
     }
 
 
     override fun getClientsAndCombinedSoldCurrencyAmount(type: CurrencyType): List<ClientWithTotalCurrencyDto> {
         log.debug("Get clients with combined currency amount they have sold")
         val client = clientRepository.getClientsAndCombinedCurrencySoldByThem(type).map { it.toDto() }
-        val clientList= mutableListOf<ClientWithTotalCurrencyDto>()
+        val clientList = mutableListOf<ClientWithTotalCurrencyDto>()
         for (element in client) {
             clientList.add(ClientWithTotalCurrencyDto(element.firstName, 100.0))
         }

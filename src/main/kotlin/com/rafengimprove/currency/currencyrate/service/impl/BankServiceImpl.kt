@@ -58,12 +58,10 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
             .map { it.toDto() }
     }
 
-    override fun deleteBankByName(name: String) {
-        val bankToDelete = getByName(name)
-        if (bankToDelete != null) {
-            bankRepository.delete(bankToDelete.toEntity())
-        }
+    override fun deleteById(id: Long) {
+            bankRepository.deleteById(id)
     }
+
 //    override fun getAllBanksThatDoNotWorkWithCurrency(currencyType: CurrencyType, pageable: Pageable): Page<BankDto> {
 //        return bankRepository.findBanksNotWorkingWithCurrency(currencyType, pageable).map { it.toDto() }
 //    }

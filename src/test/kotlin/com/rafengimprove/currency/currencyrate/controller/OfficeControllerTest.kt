@@ -72,15 +72,13 @@ class OfficeControllerTest @Autowired constructor(private val mockMvc: MockMvc) 
 
         val officeIdToDelete: Long = JsonPath.read(savedOffice, "$[0].id")
 
-        val gotOffice = mockMvc.get("/api/v1//office/$officeIdToDelete") {
+        mockMvc.get("/api/v1//office/$officeIdToDelete") {
             contentType = MediaType.APPLICATION_JSON
         }.andExpect {
             status { isOk() }
             content { contentType(MediaType.APPLICATION_JSON) }
-            jsonPath("$.id") { value(officeIdToDelete)}
-        }.andReturn().response.contentAsString
-
-//        println("Office is: $officeIdToDelete")
+            jsonPath("$.id") { value(officeIdToDelete) }
+        }
 
         mockMvc.delete("/api/v1//office/$officeIdToDelete") {
             contentType = MediaType.APPLICATION_JSON
@@ -88,11 +86,10 @@ class OfficeControllerTest @Autowired constructor(private val mockMvc: MockMvc) 
             status { isOk() }
         }
 
-        val gotOfficeAfterDeleting = mockMvc.get("/api/v1//office/$officeIdToDelete") {
+        mockMvc.get("/api/v1//office/$officeIdToDelete") {
             contentType = MediaType.APPLICATION_JSON
         }.andExpect {
             status { isNotFound() }
-            content { contentType(MediaType.APPLICATION_JSON) }
         }.andReturn().response.contentAsString
     }
 }

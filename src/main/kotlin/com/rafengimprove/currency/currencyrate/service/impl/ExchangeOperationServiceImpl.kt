@@ -1,6 +1,8 @@
 package com.rafengimprove.currency.currencyrate.service.impl
 
+import com.rafengimprove.currency.currencyrate.exception.ElementDoesNotExist
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeDataDto
+import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
@@ -9,9 +11,12 @@ import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
 import com.rafengimprove.currency.currencyrate.repository.ExchangeOperationRepository
 import com.rafengimprove.currency.currencyrate.repository.OfficeRepository
 import com.rafengimprove.currency.currencyrate.service.ExchangeOperationService
-import com.rafengimprove.currency.currencyrate.service.OfficeService
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import kotlin.math.pow
+import kotlin.math.round
 
 @Service
 class ExchangeOperationServiceImpl(
@@ -42,9 +47,9 @@ class ExchangeOperationServiceImpl(
                 this.toCurrencyType
             )
         }.map {
-            exchangeEntity.receiveAmount = when(exchangeDataDto.operationType) {
+            exchangeEntity.receiveAmount = when (exchangeDataDto.operationType) {
                 OperationType.SELL -> it.buyRate.times(exchangeDataDto.giveAmount)
-                OperationType.BUY -> it.sellRate.times(exchangeDataDto.giveAmount)
+                OperationType.BUY -> exchangeDataDto.giveAmount.div(it.sellRate).roundToDecimalPlaces(2)
             }
         }.map {
             exchangeOperationRepository.save(exchangeEntity)
@@ -54,13 +59,33 @@ class ExchangeOperationServiceImpl(
         }.orElse(false)
     }
 
-    override fun deleteById(id: Long) {
-        if (exchangeOperationRepository.findById(id) != null) {
-            exchangeOperationRepository.deleteById(id)
-        }
+    override fun getAll(): List<ExchangeOperationDto> {
+        return exchangeOperationRepository.findAll().map { it.toDto() }
     }
+
+    override fun getById(id: Long): ExchangeOperationDto {
+        return exchangeOperationRepository.findById(id).orElseThrow().toDto()
+    }
+
+    override fun deleteById(id: Long) {
+        exchangeOperationRepository.deleteById(id)
+    }
+
+    override fun getByOffice(id: Long, pageable: Pageable): Page<ExchangeOperationDto> {
+        return exchangeOperationRepository.findByOfficeEntity_Id(id, pageable).map { it.toDto() }
+    }
+
+    override fun getByClient(id: Long, pageable: Pageable): Page<ExchangeOperationDto> {
+        return exchangeOperationRepository.findByClientEntity_Id(id, pageable).map { it.toDto() }
+    }
+
 //    override fun add(exchangeOperationDto: ExchangeDataDto) {
 //        val exchangeOperation = exchangeOperationRepository.save(exchangeOperationDto.toEntity()).toDto()
 //        clientServiceImpl.modifyClientStats(exchangeOperationDto)
 //    }
+}
+
+fun Double.roundToDecimalPlaces(decimalPlaces: Int): Double {
+    val factor = 10.0.pow(decimalPlaces)
+    return round(this * factor) / factor
 }

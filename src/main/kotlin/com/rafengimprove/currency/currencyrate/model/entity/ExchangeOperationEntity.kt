@@ -37,7 +37,7 @@ open class ExchangeOperationEntity() {
     open lateinit var toCurrencyType: CurrencyType
 
     @Column(name = "date_and_time_of_exchange")
-    open lateinit var dateAndTimeOfExchange: LocalDateTime
+    open var dateAndTimeOfExchange: LocalDateTime? = null
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "client_entity_id")
@@ -52,7 +52,7 @@ open class ExchangeOperationEntity() {
         preExchangeAmount: Double,
         preExchangeCurrencyType: CurrencyType,
         postExchangeCurrencyType: CurrencyType,
-        dateAndTimeOfExchange: LocalDateTime
+        dateAndTimeOfExchange: LocalDateTime?
     ) : this() {
         this.operationType = operationType
         this.giveAmount = preExchangeAmount
@@ -84,8 +84,8 @@ open class ExchangeOperationEntity() {
         result = 31 * result + receiveAmount.hashCode()
         result = 31 * result + toCurrencyType.hashCode()
         result = 31 * result + dateAndTimeOfExchange.hashCode()
-        result = 31 * result + (clientEntity?.hashCode() ?: 0)
-        result = 31 * result + officeEntity.hashCode()
+//        result = 31 * result + (clientEntity?.hashCode() ?: 0)
+//        result = 31 * result + officeEntity.hashCode()
         return result
     }
 }
@@ -103,10 +103,12 @@ fun ExchangeOperationEntity.toDto(
     )
 
     val officeDto = office ?: this.officeEntity.toDto()
-    val clientDto = client ?: this.clientEntity?.toDto()
+    if (doINeedClient) {
+        val clientDto = client ?: this.clientEntity?.toDto()
+        exchangeOperationDto.clientDto = clientDto
+    }
 
     exchangeOperationDto.officeDto = officeDto
-    exchangeOperationDto.clientDto = clientDto
 
     return exchangeOperationDto
 }
