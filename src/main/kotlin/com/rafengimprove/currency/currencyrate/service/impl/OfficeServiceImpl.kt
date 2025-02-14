@@ -42,12 +42,12 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
 
     override fun editById(bankId: Long, office: OfficeDto): OfficeDto? {
         return if (officeRepository.existsById(office.id!!)) {
-            val officeToUpdate = getById(office.id)
+            val officeToUpdate = getById(office.id) // TODO: Нужно переделать на использование repository
             officeToUpdate?.address = office.address
             officeToUpdate?.description = office.description
             officeToUpdate?.area = office.area
             officeToUpdate?.bank = office.bank
-            officeToUpdate?.currencyRates = office.currencyRates.map { it.toEntity().toDto() }.toMutableSet()
+            officeToUpdate?.currencyRates = office.currencyRates.map { it.toEntity().toDto() }.toMutableSet() // TODO: it.toEntity().toDto()
             officeRepository.save(officeToUpdate!!.toEntity(bankRepository.findById(bankId).get())).toDto()
         } else {
             null

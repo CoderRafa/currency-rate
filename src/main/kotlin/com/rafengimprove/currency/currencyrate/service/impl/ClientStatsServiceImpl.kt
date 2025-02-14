@@ -59,7 +59,7 @@ class ClientStatsServiceImpl(
         modifier: (ClientStatsEntity) -> ClientStatsEntity
     ): ClientStatsDto? {
         return run { modifier(clientStatsEntity) }.let { clientStatsRepository.save(it) }
-            .toDto()   //clientStatsRepository.save(modifier(clientStatsEntity)).toDto()
+            .toDto()   //clientStatsRepository.save(modifier(clientStatsEntity)).toDto() // TODO: Убираем
     }
 
     override fun modifyClientStats(

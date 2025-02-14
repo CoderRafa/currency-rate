@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 @Service
 class ClientServiceImpl(
     val clientRepository: ClientRepository,
-//    val clientStatsServiceImpl: ClientStatsService
+//    val clientStatsServiceImpl: ClientStatsService // TODO: Уибираем
 ) : ClientService//, ClientStatsService by clientStatsServiceImpl
 {
 

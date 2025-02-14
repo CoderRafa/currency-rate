@@ -91,7 +91,7 @@ class BankControllerTest @Autowired constructor(private val mockMvc: MockMvc) {
     }
 
     @Test
-    fun getAllBanks() {
+    fun getAllBanks() { // TODO: Пустовато
     }
 
     @Test

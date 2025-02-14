@@ -62,7 +62,7 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
             bankRepository.deleteById(id)
     }
 
-//    override fun getAllBanksThatDoNotWorkWithCurrency(currencyType: CurrencyType, pageable: Pageable): Page<BankDto> {
+//    override fun getAllBanksThatDoNotWorkWithCurrency(currencyType: CurrencyType, pageable: Pageable): Page<BankDto> { // TODO: Убираем
 //        return bankRepository.findBanksNotWorkingWithCurrency(currencyType, pageable).map { it.toDto() }
 //    }
 }

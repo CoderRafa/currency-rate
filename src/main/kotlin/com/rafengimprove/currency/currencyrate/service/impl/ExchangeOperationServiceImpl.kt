@@ -25,7 +25,7 @@ class ExchangeOperationServiceImpl(
     val exchangeOperationRepository: ExchangeOperationRepository,
     val clientStatsServiceImpl: ClientStatsServiceImpl,
     val currencyRateRepository: CurrencyRateRepository,
-    val clientServiceImpl: ClientServiceImpl
+    val clientServiceImpl: ClientServiceImpl // TODO: Убрать если не нужно
 ) : ExchangeOperationService {
     private val log = LoggerFactory.getLogger(ExchangeOperationServiceImpl::class.java)
 
@@ -37,7 +37,7 @@ class ExchangeOperationServiceImpl(
             exchangeDataDto.toCurrencyType
         )
         val exchangeEntity = exchangeDataDto.toEntity()
-        exchangeEntity.clientEntity = clientRepository.findById(exchangeDataDto.clientId).orElseThrow()
+        exchangeEntity.clientEntity = clientRepository.findById(exchangeDataDto.clientId).orElseThrow() // TODO: Нужно сделать кастомные ошибки с понятными текстами
         exchangeEntity.officeEntity = officeRepository.findById(exchangeDataDto.officeId).orElseThrow()
 
         return with(exchangeDataDto) {
@@ -79,7 +79,7 @@ class ExchangeOperationServiceImpl(
         return exchangeOperationRepository.findByClientEntity_Id(id, pageable).map { it.toDto() }
     }
 
-//    override fun add(exchangeOperationDto: ExchangeDataDto) {
+//    override fun add(exchangeOperationDto: ExchangeDataDto) { // TODO: Убрать если не нужно
 //        val exchangeOperation = exchangeOperationRepository.save(exchangeOperationDto.toEntity()).toDto()
 //        clientServiceImpl.modifyClientStats(exchangeOperationDto)
 //    }

@@ -31,7 +31,7 @@ class BankServiceImplTest @Autowired constructor(val bankService: BankService) {
     }
 
     @Test
-    fun `Happy pass - delete a bank`() {
+    fun `Happy pass - delete a bank`() { // TODO: Пустовато
         val banksBeforeAddingAnotherOne = bankService.getAll()
 
 //        val newBank = bankService.save(BankDto(1, "BankyTheBank", "Imaginary bank"))

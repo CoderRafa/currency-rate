@@ -48,7 +48,7 @@ class BankController(val bankService: BankService) {
         return bankService.getAllByCurrency(currencyType, pageable)
     }
 
-//    @GetMapping("/no-currency")
+//    @GetMapping("/no-currency") // TODO: Точно нужно?
 //    fun getBanksThatDoNotWorkWithCurrency(
 //        @RequestParam currencyType: CurrencyType,
 //        @PageableDefault(size = 10, page = 0) pageable: Pageable

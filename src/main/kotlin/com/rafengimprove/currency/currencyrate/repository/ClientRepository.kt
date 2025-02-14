@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ClientRepository: JpaRepository<ClientEntity, Long> {
-//    @Query(
+//    @Query( // TODO: Delete it
 //        """
 //        select c.firstName, sum(eo.preExchangeAmount) as total
 //from ClientEntity c

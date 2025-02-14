@@ -28,7 +28,7 @@ interface BankRepository : JpaRepository<BankEntity, Long> {
     fun findBanksWorkingWithType(type: CurrencyType, pageable: Pageable): Page<BankEntity>
 
 
-    // TO DO
+    // TODO: Delete it
 //    @Query(
 //        """
 //        select b from BankEntity b

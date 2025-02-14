@@ -75,7 +75,7 @@ class ExchangeOperationControllerTest @Autowired constructor(private val mockMvc
 
         val savedClientId: Long = JsonPath.read(savedClient, "$.id")
 
-//        val dateTimeString = "2025-02-08 19:37:43.052162"
+//        val dateTimeString = "2025-02-08 19:37:43.052162" // TODO: Теперь это ненужно
 //        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
 //        val dateTime = LocalDateTime.parse(dateTimeString, formatter)
 
