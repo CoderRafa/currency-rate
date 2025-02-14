@@ -1,14 +1,15 @@
 package com.rafengimprove.currency.currencyrate.service.impl
 
 import com.rafengimprove.currency.currencyrate.model.dto.*
+import com.rafengimprove.currency.currencyrate.model.entity.ClientEntity
 import com.rafengimprove.currency.currencyrate.model.entity.ClientStatsEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType.BUY
 import com.rafengimprove.currency.currencyrate.model.type.OperationType.SELL
+import com.rafengimprove.currency.currencyrate.repository.ClientRepository
 import com.rafengimprove.currency.currencyrate.repository.ClientStatsRepository
-import com.rafengimprove.currency.currencyrate.service.ClientService
 import com.rafengimprove.currency.currencyrate.service.ClientStatsService
 import org.springframework.stereotype.Service
 import java.util.*
@@ -16,7 +17,7 @@ import java.util.*
 @Service
 class ClientStatsServiceImpl(
     val clientStatsRepository: ClientStatsRepository,
-    val clientService: ClientService
+    val clientRepository: ClientRepository
 ) : ClientStatsService {
 
     override fun save(clientStatsDto: ClientStatsDto): ClientStatsDto {
@@ -69,7 +70,7 @@ class ClientStatsServiceImpl(
         when (exchangeOperation.operationType) {
             SELL -> {
                 ClientStatsUpdater(
-                    clientService.findById(exchangeOperation.clientId),
+                    clientRepository.findById(exchangeOperation.clientId),
                     exchangeOperation.fromCurrencyType,
                     exchangeOperation.toCurrencyType,
                     exchangeOperation.operationType,
@@ -79,7 +80,7 @@ class ClientStatsServiceImpl(
 
             BUY -> {
                 ClientStatsUpdater(
-                    clientService.findById(exchangeOperation.clientId),
+                    clientRepository.findById(exchangeOperation.clientId),
                     exchangeOperation.fromCurrencyType,
                     exchangeOperation.toCurrencyType,
                     exchangeOperation.operationType,
@@ -88,7 +89,7 @@ class ClientStatsServiceImpl(
             }
         }.update {
             getClientStatsBy(
-                it.oldClientDto.id!!,
+                it.oldClientEntity.get().id!!,
                 it.fromCurrencyType,
                 it.toCurrencyType,
                 it.operationType
@@ -98,21 +99,23 @@ class ClientStatsServiceImpl(
 }
 
 class ClientStatsUpdater(
-    val oldClientDto: ClientDto,
+    val oldClientEntity: Optional<ClientEntity>,
     val fromCurrencyType: CurrencyType,
     val toCurrencyType: CurrencyType,
     val operationType: OperationType,
     private val amount: Double
 ) {
     fun update(clientStatsLoader: (ClientStatsUpdater) -> Optional<ClientStatsEntity>): ClientStatsEntity {
-        return clientStatsLoader(this)
-            .map { it.total = it.total.plus(amount); it }
-            .orElse(
-                ClientStatsEntity(
-                    fromCurrencyType = fromCurrencyType,
-                    toCurrencyType = toCurrencyType,
-                    operationType = operationType,
-                    total = amount
-                ).apply { this.clientEntity = oldClientDto.toEntity() })
+        return oldClientEntity.map {
+            clientStatsLoader(this)
+                .map { it.total = it.total.plus(amount); it }
+                .orElse(
+                    ClientStatsEntity(
+                        fromCurrencyType = fromCurrencyType,
+                        toCurrencyType = toCurrencyType,
+                        operationType = operationType,
+                        total = amount
+                    ).apply { this.clientEntity = it })
+        }.orElseThrow()
     }
 }

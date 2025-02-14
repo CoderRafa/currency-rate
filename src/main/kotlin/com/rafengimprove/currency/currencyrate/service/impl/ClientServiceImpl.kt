@@ -28,9 +28,9 @@ class ClientServiceImpl(
         return clientRepository.save(clientDto.toEntity()).toDto()
     }
 
-    override fun findById(id: Long): ClientDto {
+    override fun findById(id: Long, doINeedExchangeOperations: Boolean): ClientDto {
         if (clientRepository.findById(id).isPresent) {
-            return clientRepository.findById(id).orElseThrow().toDto()
+            return clientRepository.findById(id).orElseThrow().toDto(doINeedExchangeOperations = doINeedExchangeOperations)
         } else {
             throw ElementDoesNotExist("This client does not exist")
         }
