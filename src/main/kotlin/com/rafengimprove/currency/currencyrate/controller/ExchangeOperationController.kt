@@ -21,7 +21,7 @@ class ExchangeOperationController(private val exchangeOperationServiceImpl: Exch
     private val log = LoggerFactory.getLogger(ExchangeOperationController::class.java)
 
     @PostMapping
-    fun create(@RequestBody exchangeData: ExchangeDataDto): Boolean {
+    fun create(@RequestBody exchangeData: ExchangeDataDto): ExchangeOperationDto? {
         log.info("Start to exchange operation by a client with id: ${exchangeData.clientId}")
         return exchangeOperationServiceImpl.exchange(exchangeData)
     }

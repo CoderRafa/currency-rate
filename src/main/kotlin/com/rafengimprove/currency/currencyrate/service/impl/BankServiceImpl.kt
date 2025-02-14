@@ -1,5 +1,6 @@
 package com.rafengimprove.currency.currencyrate.service.impl
 
+import com.rafengimprove.currency.currencyrate.exception.ElementDoesNotExist
 import com.rafengimprove.currency.currencyrate.model.dto.BankDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
@@ -33,7 +34,7 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
                 ?.let { bankRepository.save(it.toEntity()) }
                 ?.toDto(doINeedOffices = false)
         } else {
-            null
+            throw ElementDoesNotExist("A bank with that name doesn't exist")
         }
     }
 
@@ -45,7 +46,7 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
 
     override fun getByName(name: String): BankDto? {
         log.debug("Get a bank with name {}", name)
-        return bankRepository.findByName(name)?.toDto(doINeedOffices = true)
+        return bankRepository.findByName(name)?.toDto(doINeedOffices = true) ?: throw ElementDoesNotExist("There is no bank with that name")
     }
 
     override fun getAll(): List<BankDto> {

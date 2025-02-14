@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable
 
 interface ExchangeOperationService {
 //   fun add(exchangeOperationDto: ExchangeDataDto)
-    fun exchange(exchangeDataDto: ExchangeDataDto): Boolean
+    fun exchange(exchangeDataDto: ExchangeDataDto): ExchangeOperationDto?
 
     fun getAll(): List<ExchangeOperationDto>
 

@@ -3,10 +3,15 @@ package com.rafengimprove.currency.currencyrate.controller
 import com.rafengimprove.currency.currencyrate.model.dto.BankDto
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.service.BankService
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import org.hibernate.validator.constraints.ISBN
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
+import org.springframework.validation.annotation.Validated
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -57,7 +62,7 @@ class BankController(val bankService: BankService) {
 //    }
 
     @PutMapping("/{name}")
-    fun editBankByName(@PathVariable("name") name: String, @RequestBody bankDto: BankDto): BankDto? {
+    fun editBankByName(@PathVariable("name") @Valid @NotBlank name: String, @Valid @RequestBody bankDto: BankDto): BankDto? {
         return bankService.editByName(name, bankDto)
     }
 
