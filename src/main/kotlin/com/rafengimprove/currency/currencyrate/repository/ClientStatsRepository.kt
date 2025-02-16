@@ -24,7 +24,8 @@ interface ClientStatsRepository : JpaRepository<ClientStatsEntity, Long> {
       AND c.toCurrencyType = :to
       AND c.total = (
           SELECT MAX(c2.total) FROM ClientStatsEntity c2
-          WHERE c2.fromCurrencyType = :from
+          WHERE c2.operationType = :operation
+            AND c2.fromCurrencyType = :from
             AND c2.toCurrencyType = :to
       )
       AND c.operationType = :operation
