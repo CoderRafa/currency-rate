@@ -10,6 +10,7 @@ import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType.BUY
 import com.rafengimprove.currency.currencyrate.model.type.OperationType.SELL
 import com.rafengimprove.currency.currencyrate.repository.BankRepository
+import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
 import com.rafengimprove.currency.currencyrate.repository.OfficeRepository
 import com.rafengimprove.currency.currencyrate.service.OfficeService
 import org.slf4j.LoggerFactory
@@ -18,7 +19,10 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
-class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankRepository: BankRepository) : OfficeService {
+class OfficeServiceImpl(
+    val officeRepository: OfficeRepository,
+    val bankRepository: BankRepository
+) : OfficeService {
 
     private val log = LoggerFactory.getLogger(OfficeServiceImpl::class.java)
 
@@ -42,13 +46,12 @@ class OfficeServiceImpl(val officeRepository: OfficeRepository, val bankReposito
 
     override fun editById(bankId: Long, office: OfficeDto): OfficeDto? {
         return if (officeRepository.existsById(office.id!!)) {
-            val officeToUpdate = officeRepository.findById(office.id).orElseThrow().toDto()// TODO: Нужно переделать на использование repository
+            val officeToUpdate =
+                officeRepository.findById(office.id).orElseThrow()
             officeToUpdate.address = office.address
             officeToUpdate.description = office.description
             officeToUpdate.area = office.area
-            officeToUpdate.bank = office.bank
-            officeToUpdate.currencyRates = office.currencyRates.toMutableSet() // TODO: it.toEntity().toDto()
-            officeRepository.save(officeToUpdate.toEntity(bankRepository.findById(bankId).get())).toDto()
+            officeRepository.save(officeToUpdate).toDto()
         } else {
             null
         }

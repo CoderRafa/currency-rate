@@ -5,6 +5,7 @@ import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import java.util.*
 
 interface ClientStatsRepository : JpaRepository<ClientStatsEntity, Long> {
@@ -18,17 +19,19 @@ interface ClientStatsRepository : JpaRepository<ClientStatsEntity, Long> {
 
 
     @Query("""
-   select client_entity_id, from_currency_type, to_currency_type, operation_type, total from client_stats_entity
-join (select max(total) as max_total
-      from client_stats_entity
-      where from_currency_type = :fromCurrencyType
-        and to_currency_type = :toCurrencyType) max
-on total = max.max_total
-where operation_type = :operationType
-""", nativeQuery = true)
+    SELECT c FROM ClientStatsEntity c
+    WHERE c.fromCurrencyType = :from
+      AND c.toCurrencyType = :to
+      AND c.total = (
+          SELECT MAX(c2.total) FROM ClientStatsEntity c2
+          WHERE c2.fromCurrencyType = :from
+            AND c2.toCurrencyType = :to
+      )
+      AND c.operationType = :operation
+""")
     fun findClientWhoHasMaxTotal(
-        fromCurrencyType: CurrencyType,
-        toCurrencyType: CurrencyType,
-        operationType: OperationType
+        @Param("from") fromCurrencyType: CurrencyType,
+        @Param("to") toCurrencyType: CurrencyType,
+        @Param("operation") operationType: OperationType
     ): List<ClientStatsEntity>
 }
