@@ -33,11 +33,11 @@ spring:
 
 logging:
   level:
-    root: info
-    com.raf: debug
     org.springframework.web.filter.CommonsRequestLoggingFilter: info
     org.springframework.security.web.authentication.www: info
     ru.mvp.dap.qiwi.QiwiFeignClient: trace
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type: TRACE
 
 server:
   error:

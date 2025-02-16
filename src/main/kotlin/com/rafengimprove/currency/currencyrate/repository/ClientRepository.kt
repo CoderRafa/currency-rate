@@ -12,20 +12,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ClientRepository: JpaRepository<ClientEntity, Long> {
-//    @Query( // TODO: Delete it
-//        """
-//        select c.firstName, sum(eo.preExchangeAmount) as total
-//from ClientEntity c
-//         join c.exchangeOperationEntities eo
-//         join eo.officeEntity o
-//         join o.bankEntity b
-//group by c.id, c.firstName, eo.preExchangeCurrencyType, eo.currencyDirectionType
-//having eo.preExchangeCurrencyType = :type
-//   and eo.currencyDirectionType = 'SELL'
-//order by total desc
-//    """
-//    )
-//    fun getClientAndCombinedCurrencySoldByHim(type: CurrencyType, pageable: Pageable): Page<ClientEntity>
 
     @Query(
         """

@@ -60,7 +60,7 @@ class ClientStatsServiceImpl(
         modifier: (ClientStatsEntity) -> ClientStatsEntity
     ): ClientStatsDto? {
         return run { modifier(clientStatsEntity) }.let { clientStatsRepository.save(it) }
-            .toDto()   //clientStatsRepository.save(modifier(clientStatsEntity)).toDto() // TODO: Убираем
+            .toDto()
     }
 
     override fun modifyClientStats(
@@ -95,6 +95,14 @@ class ClientStatsServiceImpl(
                 it.operationType
             )
         }.let { clientStatsRepository.save(it) }
+    }
+
+    override fun findClientWhoHasMaxTotal(
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
+        operationType: OperationType
+    ): List<ClientStatsDto> {
+        return clientStatsRepository.findClientWhoHasMaxTotal(fromCurrencyType, toCurrencyType, operationType).map { it.toDto() }
     }
 }
 

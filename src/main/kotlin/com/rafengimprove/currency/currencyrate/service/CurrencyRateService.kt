@@ -9,6 +9,6 @@ interface CurrencyRateService {
     fun editByType(officeId: Long, currencyRateDto: CurrencyRateDto): CurrencyRateDto?
     fun findAll(officeId: Long): List<CurrencyRateDto>
     fun findBy(officeId: Long, fromCurrencyType: CurrencyType, toCurrencyType: CurrencyType): CurrencyRateDto?
-    fun deleteCurrencyRateById(currencyRateId: Long)
+    fun deleteCurrencyRateById(id: Long)
 //    fun findBy(type: CurrencyType, pageable: Pageable): Page<CurrencyRateDto>
 }

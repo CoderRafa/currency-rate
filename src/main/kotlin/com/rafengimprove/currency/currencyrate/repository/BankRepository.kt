@@ -26,29 +26,4 @@ interface BankRepository : JpaRepository<BankEntity, Long> {
     """
     )
     fun findBanksWorkingWithType(type: CurrencyType, pageable: Pageable): Page<BankEntity>
-
-
-    // TODO: Delete it
-//    @Query(
-//        """
-//        select b from BankEntity b
-//        join b.officeEntities o
-//        join o.currencyRateEntities cr
-//        having cr.fromCurrencyType != :type and cr.toCurrencyType != :type
-//    """
-//    )
-//    fun findBanksNotWorkingWithCurrency(type: CurrencyType, pageable: Pageable): Page<BankEntity>
-
-    //    @Query("""
-//        select b from BankEntity b
-//        join b.officeEntities o
-//        where not exists (
-//            select 1 from o.currencyRateEntities cr
-//            where cr.type = :type
-//        )
-//        and exists (
-//            select 1 from o.currencyRateEntities cr
-//        )
-//    """)
-//    fun findBanksNotWorkingWithCurrency(type: CurrencyType, pageable: Pageable): Page<BankEntity>
 }

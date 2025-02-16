@@ -26,5 +26,4 @@ fun OfficeDto.toEntity(
     this.area = this@toEntity.area
     this.bankEntity = bank ?: this@toEntity.bank?.toEntity() ?: throw RuntimeException("Bank is still null")
     this.currencyRateEntities = currencies ?: this@toEntity.currencyRates.map { it.toEntity() }.toMutableSet()
-    //this.exchangeOperationEntity = exchangeOperation ?: this@toEntity.exchangeOperation?.toEntity(officeEntity = this) // TODO: Точно стоит оставить?
 }

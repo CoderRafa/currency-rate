@@ -26,7 +26,7 @@ class ExchangeOperationController(private val exchangeOperationServiceImpl: Exch
         return exchangeOperationServiceImpl.exchange(exchangeData)
     }
 
-    @GetMapping()
+    @GetMapping
     fun getAll(): List<ExchangeOperationDto> {
         return exchangeOperationServiceImpl.getAll()
     }

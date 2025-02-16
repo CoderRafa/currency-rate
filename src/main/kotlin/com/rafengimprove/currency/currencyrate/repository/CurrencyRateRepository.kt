@@ -12,9 +12,6 @@ import java.util.*
 @Repository
 interface CurrencyRateRepository : JpaRepository<CurrencyRateEntity, Long> {
 
-//    fun existsByType(type: CurrencyType): Boolean // TODO: Delete it
-//
-//
 //    fun findByOfficeEntity_CurrencyRateEntities_Type(type: CurrencyType, pageable: Pageable): Page<CurrencyRateEntity>
 
 

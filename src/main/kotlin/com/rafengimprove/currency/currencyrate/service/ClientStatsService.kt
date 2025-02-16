@@ -25,4 +25,10 @@ interface ClientStatsService {
     ): ClientStatsDto?
 
     fun modifyClientStats(exchangeOperation: ExchangeDataDto)
+
+    fun findClientWhoHasMaxTotal(
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
+        operationType: OperationType
+    ): List<ClientStatsDto>
 }

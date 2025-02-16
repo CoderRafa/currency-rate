@@ -8,17 +8,13 @@ import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.repository.ClientRepository
 import com.rafengimprove.currency.currencyrate.service.ClientService
-import com.rafengimprove.currency.currencyrate.service.ClientStatsService
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
 class ClientServiceImpl(
     val clientRepository: ClientRepository,
-//    val clientStatsServiceImpl: ClientStatsService // TODO: Уибираем
-) : ClientService//, ClientStatsService by clientStatsServiceImpl
+) : ClientService
 {
 
     private val log = LoggerFactory.getLogger(ClientServiceImpl::class.java)

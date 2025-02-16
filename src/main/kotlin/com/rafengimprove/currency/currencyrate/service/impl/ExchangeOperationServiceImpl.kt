@@ -1,6 +1,5 @@
 package com.rafengimprove.currency.currencyrate.service.impl
 
-import com.rafengimprove.currency.currencyrate.exception.ElementDoesNotExist
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeDataDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
@@ -85,11 +84,6 @@ class ExchangeOperationServiceImpl(
     override fun getByClient(id: Long, pageable: Pageable): Page<ExchangeOperationDto> {
         return exchangeOperationRepository.findByClientEntity_Id(id, pageable).map { it.toDto() }
     }
-
-//    override fun add(exchangeOperationDto: ExchangeDataDto) {
-//        val exchangeOperation = exchangeOperationRepository.save(exchangeOperationDto.toEntity()).toDto()
-//        clientServiceImpl.modifyClientStats(exchangeOperationDto)
-//    }
 }
 
 fun Double.roundToDecimalPlaces(decimalPlaces: Int): Double {
