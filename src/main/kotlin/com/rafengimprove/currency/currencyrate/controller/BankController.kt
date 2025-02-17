@@ -1,21 +1,15 @@
 package com.rafengimprove.currency.currencyrate.controller
 
 import com.rafengimprove.currency.currencyrate.model.dto.BankDto
-import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.service.BankService
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/bank")
@@ -48,16 +42,21 @@ class BankController(val bankService: BankService) {
         return bankService.getAllByCurrency(currencyType, pageable)
     }
 
-    @GetMapping("/no-currency")
-    fun getBanksThatDoNotWorkWithCurrency(
-        @RequestParam currencyType: CurrencyType,
-        @PageableDefault(size = 10, page = 0) pageable: Pageable
-    ): Page<BankDto> {
-        return bankService.getAllBanksThanDoNotWorkWithCurrency(currencyType, pageable)
-    }
+//    @GetMapping("/no-currency") // TODO: Точно нужно?
+//    fun getBanksThatDoNotWorkWithCurrency(
+//        @RequestParam currencyType: CurrencyType,
+//        @PageableDefault(size = 10, page = 0) pageable: Pageable
+//    ): Page<BankDto> {
+//        return bankService.getAllBanksThatDoNotWorkWithCurrency(currencyType, pageable)
+//    }
 
     @PutMapping("/{name}")
-    fun editBankByName(@PathVariable("name") name: String, @RequestBody bankDto: BankDto): BankDto? {
+    fun editBankByName(@PathVariable("name") @Valid @NotBlank name: String, @Valid @RequestBody bankDto: BankDto): BankDto? {
         return bankService.editByName(name, bankDto)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteBankByName(@PathVariable("id") id: Long) {
+        return bankService.deleteById(id)
     }
 }

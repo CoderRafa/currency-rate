@@ -1,7 +1,7 @@
 package com.rafengimprove.currency.currencyrate.controller
 
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
-import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.service.OfficeService
 import org.slf4j.LoggerFactory
@@ -33,19 +33,20 @@ class OfficeController(val officeService: OfficeService) {
     @PutMapping("/bank/{id}/office")
     fun editOfficeById(
         @PathVariable("id") id: Long,
-        @RequestBody office: OfficeDto): OfficeDto? {
+        @RequestBody office: OfficeDto
+    ): OfficeDto? {
         return officeService.editById(id, office)
     }
 
     @GetMapping("/office")
     fun getByType(
         @RequestParam currencyType: CurrencyType,
-        @RequestParam("currencyDirectionType") currencyDirectionType: CurrencyDirectionType,
+        @RequestParam("operationType") operationType: OperationType,
         @PageableDefault(size = 10, page = 0) pageable: Pageable
     ): Page<OfficeDto> {
-        log.info("Find rates of the currency type {} with direction: {}", currencyType, currencyDirectionType)
+        log.info("Find rates of the currency type {} with direction: {}", currencyType, operationType)
 
-        return officeService.findOfficesBy(currencyType, currencyDirectionType, pageable)
+        return officeService.findOfficesBy(currencyType, operationType, pageable)
     }
 
     @GetMapping("/office/work_with")
@@ -56,5 +57,10 @@ class OfficeController(val officeService: OfficeService) {
         log.info("Find offices that work with currency {}", currencyType)
 
         return officeService.findOfficesWorkingWithType(currencyType, pageable)
+    }
+
+    @DeleteMapping("/office/{id}")
+    fun deleteOfficeById(@PathVariable("id") id: Long) {
+        officeService.deleteOfficeById(id)
     }
 }

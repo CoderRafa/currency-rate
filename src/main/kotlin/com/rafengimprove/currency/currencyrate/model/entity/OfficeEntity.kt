@@ -24,28 +24,39 @@ open class OfficeEntity {
     @Column(name = "area")
     open var area: Double = 0.0
 
-    @OneToMany(mappedBy = "officeEntity", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "officeEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     open var currencyRateEntities: MutableSet<CurrencyRateEntity> = mutableSetOf()
 
-    @ManyToOne(cascade = [CascadeType.REFRESH])
+    @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_entity_id")
     open var bankEntity: BankEntity? = null
 
-    final override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null) return false
-        val oEffectiveClass =
-            if (other is HibernateProxy) other.hibernateLazyInitializer.persistentClass else other.javaClass
-        val thisEffectiveClass =
-            if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass else this.javaClass
-        if (thisEffectiveClass != oEffectiveClass) return false
-        other as OfficeEntity
+    @OneToMany(mappedBy = "officeEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    open var exchangeOperationEntities: MutableSet<ExchangeOperationEntity> = mutableSetOf()
 
-        return id != null && id == other.id
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is OfficeEntity) return false
+
+        if (id != other.id) return false
+        if (address != other.address) return false
+        if (description != other.description) return false
+        if (area != other.area) return false
+//        if (currencyRateEntities != other.currencyRateEntities) return false
+//        if (bankEntity != other.bankEntity) return false
+        return exchangeOperationEntities == other.exchangeOperationEntities
     }
 
-    final override fun hashCode(): Int =
-        if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass.hashCode() else javaClass.hashCode()
+    override fun hashCode(): Int {
+        var result = id?.hashCode() ?: 0
+        result = 31 * result + address.hashCode()
+        result = 31 * result + (description?.hashCode() ?: 0)
+        result = 31 * result + area.hashCode()
+        result = 31 * result + currencyRateEntities.hashCode()
+        result = 31 * result + (bankEntity?.hashCode() ?: 0)
+//        result = 31 * result + exchangeOperationEntities.hashCode()
+        return result
+    }
 }
 
 fun OfficeEntity.toDto(

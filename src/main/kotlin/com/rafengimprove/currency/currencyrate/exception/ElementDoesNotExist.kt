@@ -1,4 +1,4 @@
-package com.rafengimprove.currency.exception
+package com.rafengimprove.currency.currencyrate.exception
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus

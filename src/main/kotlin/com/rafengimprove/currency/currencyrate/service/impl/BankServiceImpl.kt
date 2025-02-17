@@ -1,5 +1,6 @@
 package com.rafengimprove.currency.currencyrate.service.impl
 
+import com.rafengimprove.currency.currencyrate.exception.ElementDoesNotExist
 import com.rafengimprove.currency.currencyrate.model.dto.BankDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service
 class BankServiceImpl(val bankRepository: BankRepository) : BankService {
 
     private val log = LoggerFactory.getLogger(BankServiceImpl::class.java)
+
     override fun save(bank: BankDto): BankDto {
         log.debug("Save a new bank with name {}", bank.name)
         return if (bankRepository.existsByNameIgnoreCase(bank.name)) {
@@ -32,7 +34,7 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
                 ?.let { bankRepository.save(it.toEntity()) }
                 ?.toDto(doINeedOffices = false)
         } else {
-            null
+            throw ElementDoesNotExist("A bank with that name doesn't exist")
         }
     }
 
@@ -44,7 +46,7 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
 
     override fun getByName(name: String): BankDto? {
         log.debug("Get a bank with name {}", name)
-        return bankRepository.findByName(name)?.toDto(doINeedOffices = true)
+        return bankRepository.findByName(name)?.toDto(doINeedOffices = true) ?: throw ElementDoesNotExist("There is no bank with that name")
     }
 
     override fun getAll(): List<BankDto> {
@@ -57,8 +59,8 @@ class BankServiceImpl(val bankRepository: BankRepository) : BankService {
             .map { it.toDto() }
     }
 
-    override fun getAllBanksThanDoNotWorkWithCurrency(currencyType: CurrencyType, pageable: Pageable): Page<BankDto> {
-        return bankRepository.findBanksNotWorkingWithCurrency(currencyType, pageable).map { it.toDto() }
+    override fun deleteById(id: Long) {
+            bankRepository.deleteById(id)
     }
 }
 

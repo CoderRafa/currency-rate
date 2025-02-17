@@ -1,8 +1,7 @@
 package com.rafengimprove.currency.currencyrate.service
 
 import com.rafengimprove.currency.currencyrate.model.dto.OfficeDto
-import com.rafengimprove.currency.currencyrate.model.entity.OfficeEntity
-import com.rafengimprove.currency.currencyrate.model.type.CurrencyDirectionType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -14,6 +13,7 @@ interface OfficeService {
     fun editById(bankId: Long, office: OfficeDto): OfficeDto?
     fun getById(officeId: Long): OfficeDto?
     fun getAllByBank(bankId: Long): List<OfficeDto>
-    fun findOfficesBy(currencyType: CurrencyType, currencyDirectionType: CurrencyDirectionType, pageable: Pageable): Page<OfficeDto>
+    fun findOfficesBy(currencyType: CurrencyType, operationType: OperationType, pageable: Pageable): Page<OfficeDto>
     fun findOfficesWorkingWithType(type: CurrencyType, pageable: Pageable): Page<OfficeDto>
+    fun deleteOfficeById(id: Long)
 }

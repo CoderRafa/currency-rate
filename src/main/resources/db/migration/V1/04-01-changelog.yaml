@@ -1,0 +1,287 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1738676129907-1
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: bank_seq
+            startValue: 1
+  - changeSet:
+      id: 1738676129907-2
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: client_seq
+            startValue: 1
+  - changeSet:
+      id: 1738676129907-3
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: client_stats_seq
+            startValue: 1
+  - changeSet:
+      id: 1738676129907-4
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: currency_rate_seq
+            startValue: 1
+  - changeSet:
+      id: 1738676129907-5
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: exchange_operation_seq
+            startValue: 1
+  - changeSet:
+      id: 1738676129907-6
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            incrementBy: 50
+            sequenceName: office_seq
+            startValue: 1
+  - changeSet:
+      id: 1738676129907-7
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_bank
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+            tableName: bank
+  - changeSet:
+      id: 1738676129907-8
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_client
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+              - column:
+                  name: passport_number
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+            tableName: client
+  - changeSet:
+      id: 1738676129907-9
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_clientstatsentity
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: from_currency_type
+                  type: VARCHAR(255)
+              - column:
+                  name: to_currency_type
+                  type: VARCHAR(255)
+              - column:
+                  name: operation_type
+                  type: VARCHAR(255)
+              - column:
+                  name: total
+                  type: DOUBLE
+              - column:
+                  name: client_entity_id
+                  type: BIGINT
+            tableName: client_stats_entity
+  - changeSet:
+      id: 1738676129907-10
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_currencyrate
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: from_currency_type
+                  type: VARCHAR(255)
+              - column:
+                  name: to_currency_type
+                  type: VARCHAR(255)
+              - column:
+                  name: buy_rate
+                  type: DOUBLE
+              - column:
+                  name: sell_rate
+                  type: DOUBLE
+              - column:
+                  name: office_entity_id
+                  type: BIGINT
+            tableName: currency_rate
+  - changeSet:
+      id: 1738676129907-11
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_exchange_operation
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: operation_type
+                  type: VARCHAR(255)
+              - column:
+                  name: give_amount
+                  type: DOUBLE
+              - column:
+                  name: from_currency_type
+                  type: VARCHAR(255)
+              - column:
+                  name: receive_amount
+                  type: DOUBLE
+              - column:
+                  name: to_currency_type
+                  type: VARCHAR(255)
+              - column:
+                  name: date_and_time_of_exchange
+                  type: DATETIME
+              - column:
+                  name: client_entity_id
+                  type: BIGINT
+              - column:
+                  name: office_entity_id
+                  type: BIGINT
+            tableName: exchange_operation
+  - changeSet:
+      id: 1738676129907-12
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_office
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: address
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: area
+                  type: DOUBLE
+              - column:
+                  name: bank_entity_id
+                  type: BIGINT
+            tableName: office
+  - changeSet:
+      id: 1738676129907-13
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: client_entity_id
+            baseTableName: client_stats_entity
+            constraintName: FK_CLIENTSTATSENTITY_ON_CLIENT_ENTITY
+            referencedColumnNames: id
+            referencedTableName: client
+  - changeSet:
+      id: 1738676129907-14
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: office_entity_id
+            baseTableName: currency_rate
+            constraintName: FK_CURRENCYRATE_ON_OFFICE_ENTITY
+            referencedColumnNames: id
+            referencedTableName: office
+  - changeSet:
+      id: 1738676129907-15
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: client_entity_id
+            baseTableName: exchange_operation
+            constraintName: FK_EXCHANGE_OPERATION_ON_CLIENT_ENTITY
+            referencedColumnNames: id
+            referencedTableName: client
+  - changeSet:
+      id: 1738676129907-16
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: office_entity_id
+            baseTableName: exchange_operation
+            constraintName: FK_EXCHANGE_OPERATION_ON_OFFICE_ENTITY
+            referencedColumnNames: id
+            referencedTableName: office
+  - changeSet:
+      id: 1738676129907-17
+      author: Rafa (generated)
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: bank_entity_id
+            baseTableName: office
+            constraintName: FK_OFFICE_ON_BANK_ENTITY
+            referencedColumnNames: id
+            referencedTableName: bank
+

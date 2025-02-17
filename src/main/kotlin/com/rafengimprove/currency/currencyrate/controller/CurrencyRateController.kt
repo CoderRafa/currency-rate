@@ -23,7 +23,11 @@ class CurrencyRateController(val currencyRateService: CurrencyRateService) {
         @PathVariable("id") id: Long,
         @RequestBody currencyRate: CurrencyRateDto
     ): CurrencyRateDto? {
-        log.debug("Update currency rate with type {} in office with id {}", currencyRate.type, id)
+        log.debug(
+            "Update currency rate with from currency type {} in office with id {}",
+            currencyRate.fromCurrencyType,
+            id
+        )
         return currencyRateService.editByType(id, currencyRate)
     }
 
@@ -33,9 +37,20 @@ class CurrencyRateController(val currencyRateService: CurrencyRateService) {
         return currencyRateService.findAll(id)
     }
 
+    @DeleteMapping("/delete-currency-rate/{id}")
+    fun deleteCurrencyRateById(
+        @PathVariable("id") id: Long
+    ) {
+        return currencyRateService.deleteCurrencyRateById(id)
+    }
+
     @GetMapping("/{id}/currency-rate/type")
-    fun getByTypeByOffice(@PathVariable("id") id: Long, @RequestBody type: CurrencyType): CurrencyRateDto? {
-        log.debug("Find the rate of the currency {}", type)
-        return currencyRateService.findByTypeByOffice(id, type)
+    fun getByTypeByOffice(
+        @PathVariable("id") id: Long,
+        @RequestParam fromCurrencyType: CurrencyType,
+        @RequestParam toCurrencyType: CurrencyType,
+    ): CurrencyRateDto? {
+        log.debug("Find the rate of the currency {}", toCurrencyType)
+        return currencyRateService.findBy(id, fromCurrencyType, toCurrencyType)
     }
 }
