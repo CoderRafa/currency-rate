@@ -1,7 +1,9 @@
 package com.rafengimprove.currency.currencyrate.repository
 
+import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import com.rafengimprove.currency.currencyrate.model.entity.OfficeEntity
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

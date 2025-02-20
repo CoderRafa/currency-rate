@@ -2,10 +2,14 @@ package com.rafengimprove.currency.currencyrate.service.impl
 
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeDataDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
+import com.rafengimprove.currency.currencyrate.model.dto.TopTenExchangeOperations
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.model.event.ModifyClientStatsEvent
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType.BUY
+import com.rafengimprove.currency.currencyrate.model.type.OperationType.SELL
 import com.rafengimprove.currency.currencyrate.repository.ClientRepository
 import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
 import com.rafengimprove.currency.currencyrate.repository.ExchangeOperationRepository
@@ -14,7 +18,9 @@ import com.rafengimprove.currency.currencyrate.service.ExchangeOperationService
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import kotlin.math.pow
 import kotlin.math.round
@@ -50,8 +56,8 @@ class ExchangeOperationServiceImpl(
             )
         }.map {
             exchangeEntity.receiveAmount = when (exchangeDataDto.operationType) {
-                OperationType.SELL -> it.buyRate.times(exchangeDataDto.giveAmount)
-                OperationType.BUY -> exchangeDataDto.giveAmount.div(it.sellRate).roundToDecimalPlaces(2)
+                SELL -> it.buyRate.times(exchangeDataDto.giveAmount)
+                BUY -> exchangeDataDto.giveAmount.div(it.sellRate).roundToDecimalPlaces(2)
             }
         }.map {
             exchangeOperationRepository.save(exchangeEntity)
@@ -83,6 +89,22 @@ class ExchangeOperationServiceImpl(
 
     override fun getByClient(id: Long, pageable: Pageable): Page<ExchangeOperationDto> {
         return exchangeOperationRepository.findByClientEntity_Id(id, pageable).map { it.toDto() }
+    }
+
+    override fun getTopTenByOffice(
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
+        operationType: OperationType,
+        officeId: Long
+    ): List<ExchangeOperationDto> {
+        val sortBy = when(operationType) {
+            BUY -> "receiveAmount"
+            SELL -> "giveAmount"
+        }
+        return exchangeOperationRepository.findTopTenByOffice(
+            operationType,fromCurrencyType, toCurrencyType,
+            officeId, PageRequest.of(0, 10, Sort.by(sortBy).descending())
+        ).map { it.toDto() }
     }
 }
 

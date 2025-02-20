@@ -15,10 +15,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.client.match.MockRestRequestMatchers.content
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 
 @ActiveProfiles("h2")
@@ -211,6 +213,212 @@ class ExchangeOperationControllerTest @Autowired constructor(private val mockMvc
             status { isOk() }
             content { contentType(MediaType.APPLICATION_JSON) }
             jsonPath("$.size()", Matchers.`is` (0))
+        }
+    }
+
+    @Test
+    fun `Happy pass - get exchange operations by office`() {
+        val newBank = BankDto(null, "Rafa", "Cool bank")
+        val newOffice = listOf(OfficeDto(null, "First st. 44", "Cool office", 250.0))
+        val newCurrencyRate = listOf(CurrencyRateDto(null, RUB, USD, 98.5, 102.5))
+        val newClient = ClientDto(null, "Vilhelm", "Bay", "FG458794", "bay@gmail.com")
+
+        val bankJsonString = mapper.writeValueAsString(newBank)
+        mapper.readTree(bankJsonString)
+
+        val savedBankResponse = mockMvc.post("/api/v1/bank") {
+            contentType = MediaType.APPLICATION_JSON
+            content = bankJsonString
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.name") { value(newBank.name) }
+        }.andReturn().response.contentAsString
+
+        val savedBankId: Long = JsonPath.read(savedBankResponse, "$.id")
+
+        val officeJsonString = mapper.writeValueAsString(newOffice)
+        mapper.readTree(officeJsonString)
+
+        val savedOfficeResponse = mockMvc.post("/api/v1/bank/$savedBankId/office") {
+            contentType = MediaType.APPLICATION_JSON
+            content = officeJsonString
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+        }.andReturn().response.contentAsString
+
+        val savedOfficeId: Long = JsonPath.read(savedOfficeResponse, "$[0].id")
+
+        mockMvc.post("/api/v1/office/$savedOfficeId/currency-rates") {
+            contentType = MediaType.APPLICATION_JSON
+            content = mapper.writeValueAsString(newCurrencyRate)
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$[0].sellRate") { value(newCurrencyRate[0].sellRate) }
+        }
+
+        val clientJsonString = mapper.writeValueAsString(newClient)
+        mapper.readTree(clientJsonString)
+
+        val savedClient = mockMvc.post("/api/v1/client") {
+            contentType = MediaType.APPLICATION_JSON
+            content = clientJsonString
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.firstName") { value(newClient.firstName) }
+        }.andReturn().response.contentAsString
+
+        val savedClientId: Long = JsonPath.read(savedClient, "$.id")
+
+
+
+        val firstExchangeData = ExchangeDataDto(
+            savedOfficeId, savedClientId, 100.0, SELL, RUB, USD, 9850.0, LocalDateTime.now()
+        )
+
+        val secondExchangeData = ExchangeDataDto(
+            savedOfficeId, savedClientId, 120.0, BUY, LEV, EUR, 60.0, LocalDateTime.now()
+        )
+
+        val thirdExchangeData = ExchangeDataDto(
+            savedOfficeId, savedClientId, 140.0, SELL, RUB, EUR, 14000.0, LocalDateTime.now()
+        )
+
+        val firstExchangeOperationJsonString = mapper.writeValueAsString(firstExchangeData)
+        val secondExchangeOperationJsonString = mapper.writeValueAsString(secondExchangeData)
+//        val thirdExchangeOperationTypeString = mapper.writeValueAsString(thirdExchangeData)
+
+        println("First JSON: $firstExchangeOperationJsonString")
+        println("Second JSON: $secondExchangeOperationJsonString")
+
+        mapper.readTree(firstExchangeOperationJsonString)
+//        mapper.readTree(secondExchangeOperationJsonString)
+//        mapper.readTree(thirdExchangeOperationTypeString)
+
+//        require(exchangeOperationJsonNode.isObject) { "Invalid JSON format" }
+
+        mockMvc.post("/api/v1/exchange") {
+            contentType = MediaType.APPLICATION_JSON
+            content = firstExchangeOperationJsonString
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+        }
+
+//        mockMvc.post("/api/v1/exchange") {
+//            contentType = MediaType.APPLICATION_JSON
+//            content = secondExchangeOperationJsonString
+//        }.andExpect {
+//            status { isOk() }
+//            content { contentType(MediaType.APPLICATION_JSON) }
+//        }
+
+//        mockMvc.post("/api/v1/exchange") {
+//            contentType = MediaType.APPLICATION_JSON
+//            content = thirdExchangeOperationTypeString
+//        }.andExpect {
+//            status { isOk() }
+//            content { contentType(MediaType.APPLICATION_JSON) }
+//        }
+
+        mockMvc.get("/api/v1/exchange/office/$savedOfficeId?page=0&size=10") {
+            contentType = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.content.size()", Matchers. `is`(1))
+            jsonPath("$.content[0].giveAmount", Matchers. `is`(100.0))
+//            jsonPath("$.content[0].receiveAmount", Matchers. `is`(9850.0))
+//            jsonPath("$.content[1].giveAmount", Matchers. `is`(120.0))
+        }
+    }
+
+    @Test
+    fun `Happy pass - get exchange operations by client`() {
+        val newBank = BankDto(null, "Rafa", "Cool bank")
+        val newOffice = listOf(OfficeDto(null, "First st. 44", "Cool office", 250.0))
+        val newCurrencyRate = listOf(CurrencyRateDto(null, RUB, USD, 98.5, 102.5))
+        val newClient = ClientDto(null, "Vilhelm", "Bay", "FG458794", "bay@gmail.com")
+
+        val bankJsonString = mapper.writeValueAsString(newBank)
+        mapper.readTree(bankJsonString)
+
+        val savedBankResponse = mockMvc.post("/api/v1/bank") {
+            contentType = MediaType.APPLICATION_JSON
+            content = bankJsonString
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.name") { value(newBank.name) }
+        }.andReturn().response.contentAsString
+
+        val savedBankId: Long = JsonPath.read(savedBankResponse, "$.id")
+
+        val officeJsonString = mapper.writeValueAsString(newOffice)
+        mapper.readTree(officeJsonString)
+
+        val savedOfficeResponse = mockMvc.post("/api/v1/bank/$savedBankId/office") {
+            contentType = MediaType.APPLICATION_JSON
+            content = officeJsonString
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+        }.andReturn().response.contentAsString
+
+        val savedOfficeId: Long = JsonPath.read(savedOfficeResponse, "$[0].id")
+
+        mockMvc.post("/api/v1/office/$savedOfficeId/currency-rates") {
+            contentType = MediaType.APPLICATION_JSON
+            content = mapper.writeValueAsString(newCurrencyRate)
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$[0].sellRate") { value(newCurrencyRate[0].sellRate) }
+        }
+
+        val clientJsonString = mapper.writeValueAsString(newClient)
+        mapper.readTree(clientJsonString)
+
+        val savedClient = mockMvc.post("/api/v1/client") {
+            contentType = MediaType.APPLICATION_JSON
+            content = clientJsonString
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.firstName") { value(newClient.firstName) }
+        }.andReturn().response.contentAsString
+
+        val savedClientId: Long = JsonPath.read(savedClient, "$.id")
+
+        val newExchangeData = ExchangeDataDto(
+            savedOfficeId, savedClientId, 100.0, SELL, RUB, USD, 9850.0, LocalDateTime.now()
+        )
+
+        val exchangeOperationJsonString = mapper.writeValueAsString(newExchangeData)
+
+        mapper.readTree(exchangeOperationJsonString)
+//        require(exchangeOperationJsonNode.isObject) { "Invalid JSON format" }
+
+        mockMvc.post("/api/v1/exchange") {
+            contentType = MediaType.APPLICATION_JSON
+            content = exchangeOperationJsonString
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+        }
+
+
+        mockMvc.get("/api/v1/exchange/client/$savedClientId?page=0&size=10") {
+            contentType = MediaType.APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+            jsonPath("$.content.size()", Matchers. `is`(1))
+            jsonPath("$.content[0].giveAmount", Matchers. `is`(100.0))
+            jsonPath("$.content[0].receiveAmount", Matchers. `is`(9850.0))
         }
     }
 }

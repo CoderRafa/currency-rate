@@ -1,19 +1,21 @@
 package com.rafengimprove.currency.currencyrate.controller
 
+import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.type.TypeFactory
+import com.fasterxml.jackson.databind.util.Converter
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeDataDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
+import com.rafengimprove.currency.currencyrate.model.dto.TopTenExchangeOperations
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.service.impl.ExchangeOperationServiceImpl
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/exchange")
@@ -52,10 +54,38 @@ class ExchangeOperationController(private val exchangeOperationServiceImpl: Exch
         return exchangeOperationServiceImpl.getByClient(id, pageable)
     }
 
+    @GetMapping("/top-ten/office/{id}")
+    fun getTopTenByOfficeId(
+        @PathVariable("id") officeId: Long,
+        @RequestParam fromCurrencyType: CurrencyType,
+        @RequestParam toCurrencyType: CurrencyType,
+        @RequestParam operationType: OperationType,
+        @PageableDefault(size = 10, page = 0) pageable: Pageable
+    ): Page<TopTenExchangeOperations>{
+        return exchangeOperationServiceImpl.getTopTenByOffice(fromCurrencyType, toCurrencyType, operationType, officeId, pageable)
+    }
+
     @DeleteMapping("/{id}")
     fun deleteById(
         @PathVariable("id") id: Long
     ) {
         return exchangeOperationServiceImpl.deleteById(id)
+    }
+}
+
+
+@Component
+class StringToCurrencyTypeConverter : Converter<String?, CurrencyType?> {
+
+    override fun convert(value: String?): CurrencyType? {
+        return CurrencyType.valueOf(value!!.uppercase(Locale.getDefault()))
+    }
+
+    override fun getInputType(typeFactory: TypeFactory?): JavaType {
+        TODO("Not yet implemented")
+    }
+
+    override fun getOutputType(typeFactory: TypeFactory?): JavaType {
+        TODO("Not yet implemented")
     }
 }

@@ -2,6 +2,9 @@ package com.rafengimprove.currency.currencyrate.service
 
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeDataDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
+import com.rafengimprove.currency.currencyrate.model.dto.TopTenExchangeOperations
+import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -18,5 +21,12 @@ interface ExchangeOperationService {
     fun getByOffice(id: Long, pageable: Pageable): Page<ExchangeOperationDto>
 
     fun getByClient(id: Long, pageable: Pageable): Page<ExchangeOperationDto>
+
+    fun getTopTenByOffice(
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
+        operationType: OperationType,
+        officeId: Long
+    ): List<ExchangeOperationDto>
 
 }
