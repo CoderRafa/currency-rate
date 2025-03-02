@@ -1,6 +1,7 @@
 package com.rafengimprove.currency.currencyrate.service
 
 import com.rafengimprove.currency.currencyrate.model.dto.ClientDto
+import com.rafengimprove.currency.currencyrate.model.dto.ClientFiltersContainer
 import com.rafengimprove.currency.currencyrate.model.dto.ClientWithTotalCurrencyDto
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.SortType
@@ -24,4 +25,5 @@ interface ClientService {
     fun getClientsSortedByLastname(sortType: SortType, pageable: Pageable): Page<ClientDto>
 
     fun getClientsByPartialNameInPeriod(partialName: String, date: LocalDateTime, pageable: Pageable): Page<ClientDto>
+    fun findAll(clientFiltersContainer: ClientFiltersContainer): Page<ClientDto>
 }
