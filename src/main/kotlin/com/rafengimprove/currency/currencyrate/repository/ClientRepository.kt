@@ -42,4 +42,15 @@ where eo.toCurrencyType = :type and eo.operationType = 'SELL'
     @Query("select c from ClientEntity c where c.firstName like %?1% or c.lastName like %?1% and c.dateAndTimeCreated >= ?2")
     fun getClientsByPartialNameCreatedInPeriod(partialName: String, date: LocalDateTime, pageable: Pageable): Page<ClientEntity>
 
+
+    @Query("select c from ClientEntity c")
+    fun findAllBy(pageable: Pageable): Page<ClientEntity>
+
+    fun findByFirstNameLikeIgnoreCaseOrLastNameLikeIgnoreCaseOrDateAndTimeCreatedBetween(
+        firstName: String? = null,
+        lastName: String? = null,
+        dateAndTimeCreatedStart: LocalDateTime? = null,
+        dateAndTimeCreatedEnd: LocalDateTime? = null,
+        pageable: Pageable
+    ): Page<ClientEntity>
 }

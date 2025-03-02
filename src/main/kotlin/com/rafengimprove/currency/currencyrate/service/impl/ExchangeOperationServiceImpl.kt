@@ -9,6 +9,8 @@ import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.ExchangeOperationSortType
 import com.rafengimprove.currency.currencyrate.model.type.ExchangeOperationSortType.DATE
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
+import com.rafengimprove.currency.currencyrate.model.type.SortType
+import com.rafengimprove.currency.currencyrate.model.type.SortType.DESC
 import com.rafengimprove.currency.currencyrate.repository.ClientRepository
 import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
 import com.rafengimprove.currency.currencyrate.repository.ExchangeOperationRepository
@@ -100,10 +102,11 @@ class ExchangeOperationServiceImpl(
         val sortBy = when (operationType) {
             OperationType.BUY -> "receiveAmount"
             OperationType.SELL -> "giveAmount"
-        }
+        }.let { DESC.toSort(it) }
+
         return exchangeOperationRepository.findTopTenByOffice(
             operationType, fromCurrencyType, toCurrencyType,
-            officeId, PageRequest.of(0, 10, Sort.by(sortBy).descending())
+            officeId, PageRequest.of(0, 10, sortBy)
         ).map { it.toDto() }
     }
 

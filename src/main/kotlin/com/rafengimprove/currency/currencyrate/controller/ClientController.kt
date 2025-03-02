@@ -84,6 +84,6 @@ class ClientController(val clientService: ClientService) {
     @GetMapping
     fun getAll(clientFiltersContainer: ClientFiltersContainer, pageable: Pageable): Page<ClientDto> {
         log.info("Start to find all client by filters and sorts: {}", clientFiltersContainer)
-        return clientService.findAll(clientFiltersContainer)
+        return clientService.findAll(clientFiltersContainer, pageable)
     }
 }
