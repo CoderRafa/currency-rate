@@ -25,5 +25,6 @@ interface ClientService {
     fun getClientsSortedByLastname(sortType: SortType, pageable: Pageable): Page<ClientDto>
 
     fun getClientsByPartialNameInPeriod(partialName: String, date: LocalDateTime, pageable: Pageable): Page<ClientDto>
-    fun findAll(clientFiltersContainer: ClientFiltersContainer): Page<ClientDto>
+
+    fun findAll(clientFiltersContainer: , pageable: Pageable): Page<ClientDto>
 }

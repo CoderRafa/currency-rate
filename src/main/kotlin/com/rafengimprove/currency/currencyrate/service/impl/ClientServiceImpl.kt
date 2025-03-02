@@ -6,6 +6,8 @@ import com.rafengimprove.currency.currencyrate.model.dto.ClientFiltersContainer
 import com.rafengimprove.currency.currencyrate.model.dto.ClientWithTotalCurrencyDto
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
+import com.rafengimprove.currency.currencyrate.model.type.ClientSortFieldType
+import com.rafengimprove.currency.currencyrate.model.type.ClientSortFieldType.*
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.SortType
 import com.rafengimprove.currency.currencyrate.model.type.SortType.ASC
@@ -80,7 +82,12 @@ class ClientServiceImpl(
         clientRepository.deleteById(id)
     }
 
-    override fun findAll(clientFiltersContainer: ClientFiltersContainer): Page<ClientDto> {
-        TODO("Not yet implemented")
+    override fun findAll(clientFiltersContainer: ClientFiltersContainer, pageable: Pageable): Page<ClientDto> {
+        if (clientFiltersContainer.clientSort != null) {
+            when {
+                clientFiltersContainer.clientSort.field == LAST_NAME and clientFiltersContainer.clientSort.sortType == ASC -> clientRepository.getAllClientsSortedByLastnameAsc(
+                    pageable
+                )
+            }
+        }
     }
-}
