@@ -1,6 +1,7 @@
 package com.rafengimprove.currency.currencyrate.controller
 
 import com.rafengimprove.currency.currencyrate.model.dto.ClientDto
+import com.rafengimprove.currency.currencyrate.model.dto.ClientFiltersContainer
 import com.rafengimprove.currency.currencyrate.model.dto.ClientWithTotalCurrencyDto
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
 import com.rafengimprove.currency.currencyrate.model.type.SortType
@@ -30,7 +31,7 @@ class ClientController(val clientService: ClientService) {
         return clientService.findById(id)
     }
 
-    @GetMapping("sorted-by-created")
+    @GetMapping("/sorted-by-created")
     fun getClientsSortedByDateAndTimeCreated(
         @RequestParam sortType: SortType = ASC,
         @PageableDefault(size = 10, page = 0) pageable: Pageable
@@ -38,7 +39,7 @@ class ClientController(val clientService: ClientService) {
         return clientService.getClientsSortedByDateAndTimeCreated(sortType, pageable)
     }
 
-    @GetMapping("sorted-by-lastname")
+    @GetMapping("/sorted-by-lastname")
     fun getClientsSortedByLastname(
         @RequestParam sortType: SortType = ASC,
         @PageableDefault(size = 10, page = 0) pageable: Pageable
@@ -63,7 +64,7 @@ class ClientController(val clientService: ClientService) {
         return clientService.findByPartialName(partialName, pageable)
     }
 
-    @GetMapping("partial-name/period")
+    @GetMapping("/partial-name/period")
     fun getByPartialNameInPeriod(
         @RequestParam partialName: String,
         @RequestParam date: LocalDateTime = LocalDateTime.now(),
@@ -78,5 +79,11 @@ class ClientController(val clientService: ClientService) {
         @PathVariable("id") id: Long
     ) {
         return clientService.deleteClientById(id)
+    }
+
+    @GetMapping
+    fun getAll(clientFiltersContainer: ClientFiltersContainer): Page<ClientDto> {
+        log.info("Start to find all client by filters and sorts: {}", clientFiltersContainer)
+        return clientService.findAll(clientFiltersContainer)
     }
 }
