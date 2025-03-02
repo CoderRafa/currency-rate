@@ -2,14 +2,13 @@ package com.rafengimprove.currency.currencyrate.service.impl
 
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeDataDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
-import com.rafengimprove.currency.currencyrate.model.dto.TopTenExchangeOperations
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.model.event.ModifyClientStatsEvent
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.ExchangeOperationSortType
+import com.rafengimprove.currency.currencyrate.model.type.ExchangeOperationSortType.DATE
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
-import com.rafengimprove.currency.currencyrate.model.type.OperationType.BUY
-import com.rafengimprove.currency.currencyrate.model.type.OperationType.SELL
 import com.rafengimprove.currency.currencyrate.repository.ClientRepository
 import com.rafengimprove.currency.currencyrate.repository.CurrencyRateRepository
 import com.rafengimprove.currency.currencyrate.repository.ExchangeOperationRepository
@@ -22,6 +21,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -37,7 +37,7 @@ class ExchangeOperationServiceImpl(
 ) : ExchangeOperationService {
     private val log = LoggerFactory.getLogger(ExchangeOperationServiceImpl::class.java)
 
-    override fun exchange(exchangeDataDto: ExchangeDataDto): ExchangeOperationDto?{
+    override fun exchange(exchangeDataDto: ExchangeDataDto): ExchangeOperationDto? {
         log.debug(
             "Exchange operation by client id: {} from {} to {}",
             exchangeDataDto.clientId,
@@ -56,8 +56,8 @@ class ExchangeOperationServiceImpl(
             )
         }.map {
             exchangeEntity.receiveAmount = when (exchangeDataDto.operationType) {
-                SELL -> it.buyRate.times(exchangeDataDto.giveAmount)
-                BUY -> exchangeDataDto.giveAmount.div(it.sellRate).roundToDecimalPlaces(2)
+                OperationType.SELL -> it.buyRate.times(exchangeDataDto.giveAmount)
+                OperationType.BUY -> exchangeDataDto.giveAmount.div(it.sellRate).roundToDecimalPlaces(2)
             }
         }.map {
             exchangeOperationRepository.save(exchangeEntity)
@@ -97,13 +97,72 @@ class ExchangeOperationServiceImpl(
         operationType: OperationType,
         officeId: Long
     ): List<ExchangeOperationDto> {
-        val sortBy = when(operationType) {
-            BUY -> "receiveAmount"
-            SELL -> "giveAmount"
+        val sortBy = when (operationType) {
+            OperationType.BUY -> "receiveAmount"
+            OperationType.SELL -> "giveAmount"
         }
         return exchangeOperationRepository.findTopTenByOffice(
-            operationType,fromCurrencyType, toCurrencyType,
+            operationType, fromCurrencyType, toCurrencyType,
             officeId, PageRequest.of(0, 10, Sort.by(sortBy).descending())
+        ).map { it.toDto() }
+    }
+
+    override fun getTopTenByOfficeSortedBy(
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
+        operationType: OperationType,
+        officeId: Long,
+        sortedBy: List<ExchangeOperationSortType>
+    ): List<ExchangeOperationDto> {
+
+        var sortBy: String? = if (sortedBy.isNotEmpty() && sortedBy.size > 1) {
+
+            when {
+                sortedBy.contains(ExchangeOperationSortType.BUY) -> "receiveAmount"
+                sortedBy.contains(ExchangeOperationSortType.SELL) -> "giveAmount"
+                else -> "receiveAmount"
+            }
+        } else {
+            "receiveAmount"
+        }
+
+        var date = when {
+            sortedBy.contains(DATE) -> LocalDateTime.now().minusMonths(1)
+            else -> LocalDateTime.now().minusYears(1)
+        }
+
+        return exchangeOperationRepository.topTenExchangeOperationByOfficeSortedBy(
+            operationType, fromCurrencyType, toCurrencyType,
+            officeId, date, PageRequest.of(0, 10, Sort.by(sortBy).descending())
+        ).map { it.toDto() }
+    }
+
+    override fun getTopTenByClientSortedBy(
+        fromCurrencyType: CurrencyType,
+        toCurrencyType: CurrencyType,
+        operationType: OperationType,
+        clientId: Long,
+        sortedBy: List<ExchangeOperationSortType>
+    ): List<ExchangeOperationDto> {
+        var sortBy: String? = if (sortedBy.isNotEmpty() && sortedBy.size > 1) {
+
+            when {
+                sortedBy.contains(ExchangeOperationSortType.BUY) -> "receiveAmount"
+                sortedBy.contains(ExchangeOperationSortType.SELL) -> "giveAmount"
+                else -> "receiveAmount"
+            }
+        } else {
+            "receiveAmount"
+        }
+
+        var date = when {
+            sortedBy.contains(DATE) -> LocalDateTime.now().minusMonths(1)
+            else -> LocalDateTime.now().minusYears(1)
+        }
+
+        return exchangeOperationRepository.topTenExchangeOperationByClientSortedBy(
+            operationType, fromCurrencyType, toCurrencyType,
+            clientId, date, PageRequest.of(0, 10, Sort.by(sortBy).descending())
         ).map { it.toDto() }
     }
 }

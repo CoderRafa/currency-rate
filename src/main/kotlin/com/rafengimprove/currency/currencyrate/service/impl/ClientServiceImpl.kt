@@ -6,10 +6,15 @@ import com.rafengimprove.currency.currencyrate.model.dto.ClientWithTotalCurrency
 import com.rafengimprove.currency.currencyrate.model.dto.toEntity
 import com.rafengimprove.currency.currencyrate.model.entity.toDto
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.SortType
+import com.rafengimprove.currency.currencyrate.model.type.SortType.ASC
 import com.rafengimprove.currency.currencyrate.repository.ClientRepository
 import com.rafengimprove.currency.currencyrate.service.ClientService
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
+import org.springframework.data.domain.Pageable
+import java.time.LocalDateTime
 
 @Service
 class ClientServiceImpl(
@@ -32,6 +37,34 @@ class ClientServiceImpl(
         }
     }
 
+    override fun findByPartialName(partialName: String, pageable: Pageable): Page<ClientDto> {
+        return clientRepository.findByPartialName(partialName, pageable).map { it.toDto() }
+    }
+
+    override fun getClientsSortedByDateAndTimeCreated(sortType: SortType, pageable: Pageable): Page<ClientDto> {
+        return if (sortType == ASC) {
+            clientRepository.getAllClientsSortedByDateAndTimeCreatedAsc(pageable).map { it.toDto(doINeedExchangeOperations = false) }
+        } else {
+            clientRepository.getAllClientsSortedByDateAndTimeCreatedDesc(pageable).map { it.toDto(doINeedExchangeOperations = false) }
+        }
+    }
+
+    override fun getClientsSortedByLastname(sortType: SortType, pageable: Pageable): Page<ClientDto> {
+        return if (sortType == ASC) {
+            clientRepository.getAllClientsSortedByLastnameAsc(pageable).map { it.toDto(doINeedExchangeOperations = false) }
+        } else {
+            clientRepository.getAllClientsSortedByLastnameDesc(pageable).map { it.toDto(doINeedExchangeOperations = false) }
+        }
+    }
+
+    override fun getClientsByPartialNameInPeriod(
+        partialName: String,
+        date: LocalDateTime,
+        pageable: Pageable
+    ): Page<ClientDto> {
+        val startOfPeriod = date.minusMonths(1)
+        return clientRepository.getClientsByPartialNameCreatedInPeriod(partialName, startOfPeriod, pageable).map { it.toDto(doINeedExchangeOperations = false) }
+    }
 
     override fun getClientsAndCombinedSoldCurrencyAmount(type: CurrencyType): List<ClientWithTotalCurrencyDto> {
         log.debug("Get clients with combined currency amount they have sold")

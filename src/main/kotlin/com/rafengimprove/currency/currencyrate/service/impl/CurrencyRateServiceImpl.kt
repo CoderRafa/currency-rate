@@ -65,7 +65,7 @@ class CurrencyRateServiceImpl(
             currencyToUpdate?.sellRate = currencyRateDto.sellRate
             currencyRateRepository.save(
                 currencyToUpdate!!
-                    .toEntity(/*office?.toEntity(office.bank?.toEntity())*/) // TODO: Убрать если не нужно
+                    .toEntity()
             ).toDto(doINeedCurrencies = false)
         } else {
             throw ElementDoesNotExist("There is no office with that id or it doesn't have that currency type")

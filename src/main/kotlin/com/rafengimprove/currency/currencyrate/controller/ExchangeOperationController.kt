@@ -7,6 +7,7 @@ import com.rafengimprove.currency.currencyrate.model.dto.ExchangeDataDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import com.rafengimprove.currency.currencyrate.model.dto.TopTenExchangeOperations
 import com.rafengimprove.currency.currencyrate.model.type.CurrencyType
+import com.rafengimprove.currency.currencyrate.model.type.ExchangeOperationSortType
 import com.rafengimprove.currency.currencyrate.model.type.OperationType
 import com.rafengimprove.currency.currencyrate.service.impl.ExchangeOperationServiceImpl
 import org.slf4j.LoggerFactory
@@ -60,9 +61,30 @@ class ExchangeOperationController(private val exchangeOperationServiceImpl: Exch
         @RequestParam fromCurrencyType: CurrencyType,
         @RequestParam toCurrencyType: CurrencyType,
         @RequestParam operationType: OperationType,
-        @PageableDefault(size = 10, page = 0) pageable: Pageable
-    ): Page<TopTenExchangeOperations>{
-        return exchangeOperationServiceImpl.getTopTenByOffice(fromCurrencyType, toCurrencyType, operationType, officeId, pageable)
+    ): List<ExchangeOperationDto>{
+        return exchangeOperationServiceImpl.getTopTenByOffice(fromCurrencyType, toCurrencyType, operationType, officeId)
+    }
+
+    @GetMapping("/top-ten/office/{id}/sorted")
+    fun getTopTenByOfficeIdSortedBy(
+        @PathVariable("id") officeId: Long,
+        @RequestParam fromCurrencyType: CurrencyType,
+        @RequestParam toCurrencyType: CurrencyType,
+        @RequestParam operationType: OperationType,
+        @RequestParam sortedBy: List<ExchangeOperationSortType> = listOf()
+    ): List<ExchangeOperationDto>{
+        return exchangeOperationServiceImpl.getTopTenByOfficeSortedBy(fromCurrencyType, toCurrencyType, operationType, officeId, sortedBy)
+    }
+
+    @GetMapping("/top-ten/client/{id}/sorted")
+    fun getTopTenByClientIdSortedBy(
+        @PathVariable("id") clientId: Long,
+        @RequestParam fromCurrencyType: CurrencyType,
+        @RequestParam toCurrencyType: CurrencyType,
+        @RequestParam operationType: OperationType,
+        @RequestParam sortedBy: List<ExchangeOperationSortType> = listOf()
+    ): List<ExchangeOperationDto>{
+        return exchangeOperationServiceImpl.getTopTenByClientSortedBy(fromCurrencyType, toCurrencyType, operationType, clientId, sortedBy)
     }
 
     @DeleteMapping("/{id}")
@@ -70,22 +92,5 @@ class ExchangeOperationController(private val exchangeOperationServiceImpl: Exch
         @PathVariable("id") id: Long
     ) {
         return exchangeOperationServiceImpl.deleteById(id)
-    }
-}
-
-
-@Component
-class StringToCurrencyTypeConverter : Converter<String?, CurrencyType?> {
-
-    override fun convert(value: String?): CurrencyType? {
-        return CurrencyType.valueOf(value!!.uppercase(Locale.getDefault()))
-    }
-
-    override fun getInputType(typeFactory: TypeFactory?): JavaType {
-        TODO("Not yet implemented")
-    }
-
-    override fun getOutputType(typeFactory: TypeFactory?): JavaType {
-        TODO("Not yet implemented")
     }
 }

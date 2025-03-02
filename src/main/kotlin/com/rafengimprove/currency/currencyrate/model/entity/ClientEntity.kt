@@ -3,6 +3,7 @@ package com.rafengimprove.currency.currencyrate.model.entity
 import com.rafengimprove.currency.currencyrate.model.dto.ClientDto
 import com.rafengimprove.currency.currencyrate.model.dto.ExchangeOperationDto
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "client")
@@ -25,6 +26,9 @@ open class ClientEntity {
     @Column(name = "email")
     open var email: String? = null
 
+    @Column(name = "date_and_time_created")
+    open var dateAndTimeCreated: LocalDateTime? = null
+
     @OneToMany(mappedBy = "clientEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     open var exchangeOperationEntities: MutableSet<ExchangeOperationEntity> = mutableSetOf()
 
@@ -36,7 +40,7 @@ fun ClientEntity.toDto(
     exchangeOperations: MutableSet<ExchangeOperationDto>? = null,
     doINeedExchangeOperations: Boolean = true
 ): ClientDto {
-    val clientDto = ClientDto(this.id, this.firstName, this.lastName, this.passportNumber, this.email)
+    val clientDto = ClientDto(this.id, this.firstName, this.lastName, this.passportNumber, this.email, this.dateAndTimeCreated)
 
     if (doINeedExchangeOperations) {
         val exchangeOperationDtos =
